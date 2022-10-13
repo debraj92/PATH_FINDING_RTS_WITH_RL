@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="example"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\anaconda\;CMake Files\..\..\..\..\..\anaconda\anaconda3\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Torch\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\;CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\public\;CMake Files\..\..\..\..\xsimd\;CMake Files\..\..\..\..\xsimd\build\;CMake Files\..\..\..\..\xtensor\;CMake Files\..\..\..\..\xtensor\build\;CMake Files\..\..\..\..\xtl\;CMake Files\..\..\..\..\xtl\build\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="example">
+				<Option output="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/example" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DXTENSOR_ENABLE_XSIMD"/>
+					<Add option="-DXTENSOR_USE_OPENMP"/>
+					<Add option="-DAT_PARALLEL_OPENMP=1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk/System/Library/Frameworks/OpenGL.framework"/>
+					<Add directory="/Users/debrajray/MyComputer/RTS/xtensor/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/lib/python3.8/site-packages/torch/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/lib/python3.8/site-packages/torch/include/torch/csrc/api/include"/>
+					<Add directory="/Users/debrajray/MyComputer/RTS/xtl/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 example"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="example/fast">
+				<Option output="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/example" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DXTENSOR_ENABLE_XSIMD"/>
+					<Add option="-DXTENSOR_USE_OPENMP"/>
+					<Add option="-DAT_PARALLEL_OPENMP=1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk/System/Library/Frameworks/OpenGL.framework"/>
+					<Add directory="/Users/debrajray/MyComputer/RTS/xtensor/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/lib/python3.8/site-packages/torch/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/lib/python3.8/site-packages/torch/include/torch/csrc/api/include"/>
+					<Add directory="/Users/debrajray/MyComputer/RTS/xtl/include"/>
+					<Add directory="/Users/debrajray/MyComputer/anaconda/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 example/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/AStarOpenList.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/AStarOpenList.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/AStar_.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/AStar_.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/coordinatesUtil.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/coordinatesUtil.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/enemy/enemy.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/enemy/fixedEnemy.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/enemy/fixedEnemy.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/enemyLocator.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/enemyLocator.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/example.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/findPath.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/findPath.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/fixedobstacles.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/fixedobstacles.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/gameConstants.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/gameEnv.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/gameEnv.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/gameSimulation.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/gameSimulation.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/node_.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/node_.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/observation.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/observation.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/player.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/player.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/plot/pbPlots.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/plot/pbPlots.hpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/plot/supportLib.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/plot/supportLib.hpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/rl_control.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/rl_control.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/state.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/state.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Torch/torchConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Torch\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Torch/torchConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Torch\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/Caffe2Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/Caffe2ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/Caffe2Targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/Caffe2Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/public/mkl.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\public\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/public/mkldnn.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\public\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/public/threads.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\public\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../../anaconda/anaconda3/lib/python3.8/site-packages/torch/share/cmake/Caffe2/public/utils.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\anaconda\anaconda3\lib\python3.8\site-packages\torch\share\cmake\Caffe2\public\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xsimd/build/xsimdConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xsimd\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xsimd/build/xsimdConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xsimd\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xsimd/build/xsimdTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xsimd\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtensor/build/xtensorConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtensor\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtensor/build/xtensorConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtensor\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtensor/build/xtensorTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtensor\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtl/build/xtlConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtl\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtl/build/xtlConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtl\build\"/>
+		</Unit>
+		<Unit filename="/Users/debrajray/MyComputer/RTS/hog2_debraj/hog2/apps/game1/../../../../xtl/build/xtlTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\xtl\build\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

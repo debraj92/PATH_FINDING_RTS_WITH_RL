@@ -1,0 +1,54 @@
+diff --git a/apps/game1/DQN/Vanilla-DQN/DQNNet.cpp b/apps/game1/DQN/Vanilla-DQN/DQNNet.cpp
+index 81db24ed..f7bded93 100644
+--- a/apps/game1/DQN/Vanilla-DQN/DQNNet.cpp
++++ b/apps/game1/DQN/Vanilla-DQN/DQNNet.cpp
+@@ -103,7 +103,7 @@ void DQNNet::plotLoss() {
+     auto success = DrawScatterPlot(imageReference, 1000, 1000, &episodes, &losses_averaged, errorMessage);
+     if(success){
+         vector<double> *pngdata = ConvertToPNG(imageReference->image);
+-        WriteToFile(pngdata, "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/plot2/loss_output.png");
++        WriteToFile(pngdata, "/data/home/debraj1/plots/loss_output.png");
+         DeleteImage(imageReference->image);
+     }else{
+         cerr << "Error: ";
+diff --git a/apps/game1/JsonParser.h b/apps/game1/JsonParser.h
+index 548d5b4b..2574111a 100644
+--- a/apps/game1/JsonParser.h
++++ b/apps/game1/JsonParser.h
+@@ -14,8 +14,8 @@ using namespace std;
+ class JsonParser {
+ 
+     string trainingMapId;
+-    const string TRAINING_MAP_DIR_OBSTACLES = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/training_maps/obstacles/";
+-    const string TRAINING_MAP_DIR_ENEMIES = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/training_maps/enemies/";
++    const string TRAINING_MAP_DIR_OBSTACLES = "/data/home/debraj1/training_maps/training_maps/obstacles/";
++    const string TRAINING_MAP_DIR_ENEMIES = "/data/home/debraj1/training_maps/training_maps/enemies/";
+ 
+     void openFile(const string &filePath, ofstream &file);
+ 
+diff --git a/apps/game1/player.cpp b/apps/game1/player.cpp
+index ced3086c..7661d821 100644
+--- a/apps/game1/player.cpp
++++ b/apps/game1/player.cpp
+@@ -247,7 +247,7 @@ void player::plotRewards(vector<double> &rewards) {
+     auto success = DrawScatterPlot(imageReference, 1000, 1000, &episodes, &rewards_averaged, errorMessage);
+     if(success){
+         vector<double> *pngdata = ConvertToPNG(imageReference->image);
+-        WriteToFile(pngdata, "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/plot2/episode_rewards.png");
++        WriteToFile(pngdata, "/data/home/debraj1/plots/episode_rewards.png");
+         DeleteImage(imageReference->image);
+     }else{
+         cerr << "Error: ";
+diff --git a/apps/game1/player.h b/apps/game1/player.h
+index 6b35e23e..5a7a38a7 100644
+--- a/apps/game1/player.h
++++ b/apps/game1/player.h
+@@ -34,7 +34,7 @@ class player : public RLNN_Agent {
+ 
+     const LOG_LEVEL LogLevel = LOG_LEVEL::INFO;
+ 
+-    const std::string DQN_MODEL_PATH = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/model";
++    const std::string DQN_MODEL_PATH = "/data/home/debraj1/model";
+ 
+     shared_ptr<findPath> fp;
+ 
