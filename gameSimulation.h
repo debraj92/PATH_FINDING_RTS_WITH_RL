@@ -13,6 +13,7 @@
 #include "findPath.h"
 #include "coordinatesUtil.h"
 #include "enemy/enemyUIData.h"
+#include "CrossMoveHandler.h"
 
 
 using namespace std;
@@ -24,6 +25,8 @@ class gameSimulation : public coordinatesUtil {
     std::unique_ptr<Logger> logger;
 
     unordered_set<int> enemiesAwayFromBase;
+
+    CrossMoveHandler crossMoves;
 
     int movePlayer(vector<vector<int>> &grid, const observation &currentObservation, int* error);
     void moveEnemies(vector<std::vector<int>> &grid, observation &ob, int time);
@@ -42,6 +45,8 @@ class gameSimulation : public coordinatesUtil {
     void markDeadEnemies(vector<enemyUIData> &enemiesUI);
 
     bool isStuckAtBorder();
+
+    void damageFromCrossMoves(vector<std::vector<int>> &grid);
 
 public:
 

@@ -41,7 +41,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         auto t1 = high_resolution_clock::now();
         logger->logDebug("Time ")->logDebug(player1->timeStep)->endLineDebug();
         logger->logDebug("player (" + to_string(player1->current_x) + ", "+to_string(player1->current_y)+")")->endLineDebug();
-
+        crossMoves.clearAllMoves();
         // Next Action
         actionError = 0;
         action = movePlayer(grid, currentObservation, &actionError);
@@ -84,6 +84,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
             enemiesInThisRound.clear();
             populateEnemiesForUI(enemiesInThisRound);
             fight(grid);
+            damageFromCrossMoves(grid);
             markDeadEnemies(enemiesInThisRound);
         }
         logger->printBoardDebug(grid);
@@ -162,6 +163,7 @@ void gameSimulation::learnToPlay(std::vector<std::vector<int>> &grid) {
     while((not isEpisodeComplete()) && player1->timeStep <= SESSION_TIMEOUT) {
         logger->logDebug("Time ")->logDebug(player1->timeStep)->endLineDebug();
         logger->logDebug("player (" + to_string(player1->current_x) + ", "+to_string(player1->current_y)+")")->endLineDebug();
+        crossMoves.clearAllMoves();
         int actionError = 0;
         // Next Action
         int action = movePlayer(grid, currentObservation, &actionError);
@@ -169,6 +171,7 @@ void gameSimulation::learnToPlay(std::vector<std::vector<int>> &grid) {
         if (player1->life_left > 0 and not isDestinationReached()) {
             moveEnemies(grid, currentObservation, player1->timeStep);
             fight(grid);
+            damageFromCrossMoves(grid);
         }
         logger->printBoardDebug(grid);
         ++player1->timeStep;
@@ -243,6 +246,10 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
     }
     grid[savedLocationPlayerX][savedLocationPlayerY] = 0;
     grid[player1->current_x][player1->current_y] = 9;
+    if (savedLocationPlayerX != player1->current_x or savedLocationPlayerY != player1->current_y) {
+        // player actually moved
+        crossMoves.addMove({savedLocationPlayerX, savedLocationPlayerY, player1->current_x, player1->current_y, PLAYER_ID});
+    }
 
     return nextAction;
 }
@@ -259,7 +266,18 @@ void gameSimulation::moveEnemies(vector<std::vector<int>> &grid, observation &ob
     }
 
     for (auto& enemyId : enemiesToMoveId) {
+        CrossMoveHandler::move move {
+            player1->hashMapEnemies.find(enemyId)->second.current_x,
+            player1->hashMapEnemies.find(enemyId)->second.current_y,
+            -1,
+           -1,
+            enemyId
+        };
+
         if(player1->hashMapEnemies.find(enemyId)->second.doNextMove(time, grid, {ob.playerX, ob.playerY, 0})) {
+            move.endX = player1->hashMapEnemies.find(enemyId)->second.current_x;
+            move.endY = player1->hashMapEnemies.find(enemyId)->second.current_y;
+            crossMoves.addMove(move);
             if(not player1->isTrainingMode) enemiesAwayFromBase.insert(enemyId);
         }
     }
@@ -455,4 +473,20 @@ bool gameSimulation::isStuckAtBorder() {
     or player1->current_x == GRID_SPAN - 1
     or player1->current_y == GRID_SPAN - 1;
 
+}
+
+void gameSimulation::damageFromCrossMoves(vector<std::vector<int>> &grid) {
+    crossMoves.checkForCrossMoves();
+    auto damagedUnits = crossMoves.getUnitsKilledInCrossMove();
+    for(auto id : damagedUnits) {
+        if (id == PLAYER_ID) {
+            player1->takeDamage(10);
+        } else {
+            auto e = player1->hashMapEnemies.find(id);
+            if(e != player1->hashMapEnemies.end()) {
+                grid[e->second.current_x][e->second.current_y] = 0;
+                player1->hashMapEnemies.erase(id);
+            }
+        }
+    }
 }
