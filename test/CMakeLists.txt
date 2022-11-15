@@ -36,6 +36,8 @@ find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 find_package(xtensor REQUIRED PATHS /Users/debrajray/MyComputer/RTS/xtensor/build)
 find_package(jsoncpp REQUIRED)
+find_package(SFML COMPONENTS
+        system window graphics network audio REQUIRED PATHS /Users/debrajray/MyComputer/softwares/SFML/build)
 
 get_target_property(JSON_INC_PATH jsoncpp_lib INTERFACE_INCLUDE_DIRECTORIES)
 include_directories(${JSON_INC_PATH})
@@ -56,10 +58,11 @@ add_executable(${This} AStar_test.cpp GameMaps_test.cpp Observation_test.cpp ../
         ../DQN/Vanilla-DQN/DQNNet.cpp ../DQN/Vanilla-DQN/DQNNet.h ../DQN/Vanilla-DQN/RLNN_Agent.cpp ../DQN/Vanilla-DQN/RLNN_Agent.h
         #../DQN/dueling-DQN-bounded/DQNNet.cpp ../DQN/dueling-DQN-bounded/DQNNet.h ../DQN/dueling-DQN-bounded/RLNN_Agent.cpp ../DQN/dueling-DQN-bounded/RLNN_Agent.h
         ../trainingMaps.cpp ../trainingMaps.h testing.h gameSimulation_test.cpp CNN_test.cpp ../FOV_CNN/CNN_controller.cpp ../FOV_CNN/CNN_controller.h ../FOV_CNN/FOV_Filters.cpp ../FOV_CNN/FOV_Filters.h FOV_Filter_test.cpp AStarChase_test.cpp BaseLine_Agent.cpp Enemy_test.cpp
-        ../JsonParser.cpp ../JsonParser.h AbstractAStar_test.cpp)
+        ../JsonParser.cpp ../JsonParser.h AbstractAStar_test.cpp
+        ../UI/SimpleUIView.cpp ../UI/SimpleUIView.h ../GameController.cpp ../GameController.h ../UI/TileMap.h ../enemy/enemyUIData.h ../CrossMoveHandler.cpp ../CrossMoveHandler.h CrossHandler_test.cpp)
 
 target_include_directories(${This} PUBLIC ${GTEST_INCLUDE_DIR} ${xtensor_INCLUDE_DIRS})
-target_link_libraries(${This} PUBLIC "${TORCH_LIBRARIES}" xtensor jsoncpp_lib ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${OPENGL_LIBRARY} OpenMP::OpenMP_CXX
+target_link_libraries(${This} PUBLIC "${TORCH_LIBRARIES}" xtensor jsoncpp_lib ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${OPENGL_LIBRARY} OpenMP::OpenMP_CXX sfml-graphics
         gtest
         gtest_main
         )

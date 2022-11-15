@@ -7,10 +7,10 @@
 
 #include <vector>
 #include <mutex>
-#include "Logger.h"
+#include "../Logger.h"
 #include "TileMap.h"
-#include "enemy/enemy.h"
-#include "enemy/enemyUIData.h"
+#include "../enemy/enemy.h"
+#include "../enemy/enemyUIData.h"
 
 using namespace std;
 class SimpleUIView {

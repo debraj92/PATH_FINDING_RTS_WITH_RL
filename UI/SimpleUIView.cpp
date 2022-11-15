@@ -5,7 +5,7 @@
 #include "SimpleUIView.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "gameConstants.h"
+#include "../gameConstants.h"
 #include <thread>
 #include <vector>
 
