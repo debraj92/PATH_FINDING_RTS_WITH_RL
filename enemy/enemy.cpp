@@ -229,11 +229,9 @@ void enemy::updateUIParams(int nextX, int nextY) {
     }
 }
 
-void enemy::reborn(int x, int y) {
+void enemy::reborn() {
     this->life_left = 10;
-    this->start_x = x;
-    this->start_y = y;
-    this->current_x = x;
-    this->current_y = y;
+    this->start_x = current_x;
+    this->start_y = current_y;
     max_moves = ENEMY_MAX_MOVES;
 }

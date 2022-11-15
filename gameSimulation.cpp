@@ -319,7 +319,8 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
                 enemyLocation->second--;
             } else if(enemyLocationsCopy.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
                 // fused enemy don't take damage and is reborn
-                enemy_iterator->second.reborn(enemy_iterator->second.current_x, enemy_iterator->second.current_y);
+                logger->logDebug("Fused Enemy, id: ")->logDebug(enemy_iterator->second.id)->endLineDebug();
+                enemy_iterator->second.reborn();
                 grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = enemy_iterator->second.id;
             }
         }
