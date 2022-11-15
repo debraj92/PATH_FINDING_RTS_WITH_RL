@@ -78,6 +78,7 @@ public:
 
     void predictNextPlayerLocation(vector<std::vector<int>> &grid, playerInfo &pl_info);
     void unitTraining();
+    void reborn(int x, int y);
 
 };
 

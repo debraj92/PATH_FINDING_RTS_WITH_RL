@@ -284,6 +284,7 @@ void gameSimulation::moveEnemies(vector<std::vector<int>> &grid, observation &ob
 
 void gameSimulation::fight(vector<std::vector<int>> &grid) {
     std::unordered_map<node_, int, node_::node_Hash> enemyLocations;
+    std::unordered_map<node_, int, node_::node_Hash> enemyLocationsCopy;
     // damage player
     for (auto& enemyIterator : player1->hashMapEnemies) {
         enemy& e = enemyIterator.second;
@@ -297,23 +298,32 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
                 e.takeDamage(e.getAttackPoints());
             }
             auto enemyLocation = enemyLocations.find(node_(e.current_x, e.current_y));
+            auto enemyLocationCopy = enemyLocationsCopy.find(node_(e.current_x, e.current_y));
             if (enemyLocation != enemyLocations.end()) {
                 enemyLocation->second++;
+                enemyLocationCopy->second++;
             } else {
                 enemyLocations.insert(make_pair(node_(e.current_x, e.current_y), 1));
+                enemyLocationsCopy.insert(make_pair(node_(e.current_x, e.current_y), 1));
             }
         }
     }
 
-    // damage enemies
+    // fuse enemies and remove dead enemies
     for(auto enemy_iterator = player1->hashMapEnemies.begin(); enemy_iterator != player1->hashMapEnemies.end();) {
         if (enemy_iterator->second.getLifeLeft() > 0) {
-            if (enemyLocations.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
+            auto enemyLocation = enemyLocations.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y));
+            if (enemyLocation->second >= 2) {
                 logger->logDebug("Enemy killed, id: ")->logDebug(enemy_iterator->second.id)->endLineDebug();
                 enemy_iterator->second.takeDamage(enemy_iterator->second.getAttackPoints());
-                grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;
+                enemyLocation->second--;
+            } else if(enemyLocationsCopy.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
+                // fused enemy don't take damage and is reborn
+                enemy_iterator->second.reborn(enemy_iterator->second.current_x, enemy_iterator->second.current_y);
+                grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = enemy_iterator->second.id;
             }
         }
+
         if (enemy_iterator->second.getLifeLeft() <= 0 or enemy_iterator->second.max_moves <= 0) {
             // clean up dead enemies
             grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;
