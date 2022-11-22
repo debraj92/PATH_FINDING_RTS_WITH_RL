@@ -38,6 +38,12 @@ class player : public RLNN_Agent {
 
     const std::string DQN_MODEL_PATH = "../resources/model";
 
+    // check pointing
+    bool isCheckPoint1Complete = false;
+    bool isCheckPoint2Complete = false;
+    const std::string DQN_MODEL_PATH_CHKPOINT_1 = "../resources/model_checkpoints/1";
+    const std::string DQN_MODEL_PATH_CHKPOINT_2 = "../resources/model_checkpoints/2";
+
     shared_ptr<findPath> fp;
 
     std::atomic<int> epoch;
@@ -168,6 +174,8 @@ public:
     void enableUI();
 
     void enableInfiniteLife();
+
+    void checkPointModel(int episode);
 
     /// Testing
 #ifdef TESTING

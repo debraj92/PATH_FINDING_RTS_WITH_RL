@@ -383,6 +383,8 @@ void player::runTrainingAsync() {
         logger->logInfo("Epoch: ")->logInfo(epoch)->endLineInfo();
         auto loss = RLNN_Agent::learnWithDQN();
         logger->logInfo("Network Loss: ")->logInfo(loss)->endLineInfo();
+
+        checkPointModel(epoch);
     }
 }
 
@@ -532,6 +534,17 @@ void player::enableUI() {
 
 void player::enableInfiniteLife() {
     infiniteLife = true;
+}
+
+void player::checkPointModel (int episode) {
+    double percentage_complete = (double)episode * 100 / MAX_EPISODES;
+    if (not isCheckPoint1Complete and (percentage_complete >= 90 and percentage_complete <= 93)) {
+        saveModel(DQN_MODEL_PATH_CHKPOINT_1);
+        isCheckPoint1Complete = true;
+    } else if ((not isCheckPoint2Complete) and percentage_complete > 93 and percentage_complete <= 96) {
+        saveModel(DQN_MODEL_PATH_CHKPOINT_2);
+        isCheckPoint2Complete = true;
+    }
 }
 
 

@@ -92,6 +92,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
 
         // Recover from bad stuck state if possible
         if(player1->markVisited() >= MAX_VISITED_FOR_STUCK or isStuckAtBorder()) {
+            logger->logDebug("Player stuck, attempting to re-route")->endLineDebug();
             if (player1->isSimpleAstarPlayer) {
                 player1->isSimplePlayerStuckDontReroute = true;
             } else {
