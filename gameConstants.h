@@ -40,6 +40,7 @@ const int NE=8;
 
 const int VISION_RADIUS = 4;
 const int FOV_WIDTH = 2 * VISION_RADIUS + 1;
+const int BASELINE_SHOOTING_RADIUS = 2;
 
 const int ENEMY_VISION_RADIUS = 3;
 const int ENEMY_MAX_MOVES = 8;
