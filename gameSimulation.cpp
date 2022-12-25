@@ -59,19 +59,22 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
                 player1->removeTemporaryObstacles();
                 if (not isPathFound) {
                     logger->logInfo("No path found, re-routing will be unsuccessful")->endLineInfo();
-                    if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
+                    isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+                    if (not isPathFound) {
                         logger->logInfo("ERROR: NO PATH FOUND. USE CASE FAILED")->endLineInfo();
                     }
                 }
             }
-            logger->logDebug("Attempting to re-route")->endLineDebug();
-            // observe again after re-routing
-            int direction = currentObservation.direction;
-            int isPlayerInHotPursuit = currentObservation.isPlayerInHotPursuit;
-            currentObservation = observation();
-            // ignore the last action. Observe with previous to last action.
-            player1->observe(currentObservation, grid, previousAction, previousActionError, isPlayerInHotPursuit, direction);
-            action = movePlayer(grid, currentObservation, &actionError);
+            if(isPathFound) {
+                logger->logDebug("Attempting to re-route")->endLineDebug();
+                // observe again after re-routing
+                int direction = currentObservation.direction;
+                int isPlayerInHotPursuit = currentObservation.isPlayerInHotPursuit;
+                currentObservation = observation();
+                // ignore the last action. Observe with previous to last action.
+                player1->observe(currentObservation, grid, previousAction, previousActionError, isPlayerInHotPursuit, direction);
+                action = movePlayer(grid, currentObservation, &actionError);
+            }
         }
 
         previousAction = action;
@@ -92,6 +95,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
 
         // Recover from bad stuck state if possible
         if(player1->markVisited() >= MAX_VISITED_FOR_STUCK or isStuckAtBorder()) {
+            logger->logDebug("Player stuck, attempting to re-route")->endLineDebug();
             if (player1->isSimpleAstarPlayer) {
                 player1->isSimplePlayerStuckDontReroute = true;
             } else {
@@ -284,6 +288,7 @@ void gameSimulation::moveEnemies(vector<std::vector<int>> &grid, observation &ob
 
 void gameSimulation::fight(vector<std::vector<int>> &grid) {
     std::unordered_map<node_, int, node_::node_Hash> enemyLocations;
+    std::unordered_map<node_, int, node_::node_Hash> enemyLocationsCopy;
     // damage player
     for (auto& enemyIterator : player1->hashMapEnemies) {
         enemy& e = enemyIterator.second;
@@ -297,23 +302,33 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
                 e.takeDamage(e.getAttackPoints());
             }
             auto enemyLocation = enemyLocations.find(node_(e.current_x, e.current_y));
+            auto enemyLocationCopy = enemyLocationsCopy.find(node_(e.current_x, e.current_y));
             if (enemyLocation != enemyLocations.end()) {
                 enemyLocation->second++;
+                enemyLocationCopy->second++;
             } else {
                 enemyLocations.insert(make_pair(node_(e.current_x, e.current_y), 1));
+                enemyLocationsCopy.insert(make_pair(node_(e.current_x, e.current_y), 1));
             }
         }
     }
 
-    // damage enemies
+    // fuse enemies and remove dead enemies
     for(auto enemy_iterator = player1->hashMapEnemies.begin(); enemy_iterator != player1->hashMapEnemies.end();) {
         if (enemy_iterator->second.getLifeLeft() > 0) {
-            if (enemyLocations.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
+            auto enemyLocation = enemyLocations.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y));
+            if (enemyLocation->second >= 2) {
                 logger->logDebug("Enemy killed, id: ")->logDebug(enemy_iterator->second.id)->endLineDebug();
                 enemy_iterator->second.takeDamage(enemy_iterator->second.getAttackPoints());
-                grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;
+                enemyLocation->second--;
+            } else if(enemyLocationsCopy.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
+                // fused enemy don't take damage and is reborn
+                logger->logDebug("Fused Enemy, id: ")->logDebug(enemy_iterator->second.id)->endLineDebug();
+                enemy_iterator->second.reborn();
+                grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = enemy_iterator->second.id;
             }
         }
+
         if (enemy_iterator->second.getLifeLeft() <= 0 or enemy_iterator->second.max_moves <= 0) {
             // clean up dead enemies
             grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;

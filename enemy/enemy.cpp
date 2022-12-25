@@ -228,3 +228,14 @@ void enemy::updateUIParams(int nextX, int nextY) {
         hasChangedOrientation = false;
     }
 }
+
+void enemy::reborn() {
+    this->life_left = 10;
+    this->start_x = current_x;
+    this->start_y = current_y;
+    max_moves = ENEMY_MAX_MOVES;
+    timeStep = 0;
+    lastKnownPlayerX = -1;
+    lastKnownPlayerY = -1;
+    isPathToBaseKnown = false;
+}
