@@ -148,11 +148,24 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
         }
     }
 
+    if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
+        if(isPotentialFieldPlayerStuck) {
+            // Behave like baseline A* player if stuck
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+                }
+            }
+        } else {
+            pfUtil.evaluateSurroundingPotentialField(current_x, current_y, hashMapEnemies, grid);
+        }
+    }
+
     ob.findDestination(isTrainingMode and not stopLearning);
     ob.locateTrajectoryAndDirection(fp);
     ob.locateRelativeTrajectory();
 
-    if (not isSimpleAstarPlayer) {
+    if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
 
         ob.isTrueLastActionLeftOrRight = (lastAction == ACTION_DODGE_LEFT or lastAction == ACTION_DODGE_RIGHT) ? 1 : 0;
         ob.recordFOVForCNN(cnnController, fp);
@@ -254,6 +267,9 @@ void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
     damage = 0;
     maxMemoryUsed = 0;
 
+    if(isPotentialFieldPlayer) {
+        pfUtil.setDestination(dest_x, dest_y);
+    }
 }
 
 int player::selectAction(const observation& currentState) {
@@ -532,6 +548,16 @@ void player::enableUI() {
 
 void player::enableInfiniteLife() {
     infiniteLife = true;
+}
+
+void player::enablePotentialFieldPlayer() {
+    isPotentialFieldPlayer = true;
+}
+
+void player::moveWithPotentialField() {
+    if (isPotentialFieldPlayer) {
+        pfUtil.moveToLowestPotentialCell(current_x, current_y);
+    }
 }
 
 

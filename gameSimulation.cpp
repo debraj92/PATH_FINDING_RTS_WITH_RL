@@ -78,6 +78,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         previousActionError = actionError;
 
         fight(grid);
+
         // Enemy operations
         if (player1->life_left > 0 and not isDestinationReached()) {
             moveEnemies(grid, currentObservation, player1->timeStep);
@@ -86,14 +87,19 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
             fight(grid);
             markDeadEnemies(enemiesInThisRound);
         }
+
         logger->printBoardDebug(grid);
         player1->publishOnUI(enemiesInThisRound);
         ++player1->timeStep;
 
         // Recover from bad stuck state if possible
-        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK or isStuckAtBorder()) {
+        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
             if (player1->isSimpleAstarPlayer) {
+                logger->logInfo("Baseline Player stuck")->endLineInfo();
                 player1->isSimplePlayerStuckDontReroute = true;
+            } else if (player1->isPotentialFieldPlayer) {
+                logger->logInfo("PF Player stuck")->endLineInfo();
+                player1->isPotentialFieldPlayerStuck = true;
             } else {
                 if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
                     logger->logInfo("ERROR: Player stuck and recovery not possible")->endLineInfo();
@@ -103,6 +109,8 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         } else {
             if (player1->isSimpleAstarPlayer) {
                 player1->isSimplePlayerStuckDontReroute = false;
+            } else if (player1->isPotentialFieldPlayer) {
+                player1->isPotentialFieldPlayerStuck = false;
             }
         }
 
@@ -207,6 +215,16 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
     int nextAction;
     if (player1->isSimpleAstarPlayer) {
         nextAction = ACTION_STRAIGHT;
+
+    } else if (player1->isPotentialFieldPlayer) {
+        // if stuck follow baseline behavior
+        if(player1->isPotentialFieldPlayerStuck) {
+            nextAction = ACTION_STRAIGHT;
+        } else {
+            // move in the direction from high to low potential
+            nextAction = -1;
+            player1->moveWithPotentialField();
+        }
     } else {
         nextAction = player1->selectAction(currentObservation);
 
@@ -235,8 +253,6 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
         case ACTION_DODGE_RIGHT:
             *error = setDodgeRightActionCoordinates(player1->current_x, player1->current_y, currentObservation.direction);
             break;
-        default:
-            logger->logInfo("ERROR: Wrong next action")->endLineInfo();
     }
     if(*error != -1) {
         player1->distanceTravelled++;

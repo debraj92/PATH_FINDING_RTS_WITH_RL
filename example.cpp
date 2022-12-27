@@ -45,7 +45,7 @@ void runTesting(player &player1) {
     trainingMaps tm(true);
     float countDestinationReach = 0;
     float death = 0;
-    float max_ep = 500;
+    float max_ep = 1000;
     //player1.enableInfiniteLife();
     auto t1 = high_resolution_clock::now();
     for (int i=1; i<= max_ep; i++) {
@@ -153,6 +153,7 @@ int main() {
     player player1(false);
     /// Enable baseline for comparison
     //player1.enableBaseLinePlayer();
+    player1.enablePotentialFieldPlayer();
     TestResult t{};
     runTesting(player1);
 
