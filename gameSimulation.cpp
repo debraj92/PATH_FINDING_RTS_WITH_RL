@@ -16,7 +16,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
     logger->logDebug("gameSimulation::play")->endLineDebug();
     player1->countPathLengthToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
     populateEnemies(grid, false);
-    if (not player1->isSimpleAstarPlayer) {
+    if (not player1->isSimpleAstarPlayer and not player1->isPotentialFieldPlayer) {
         bool isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
         if (not isPathFound) {
             logger->logInfo("No path found, ignoring navigation")->endLineInfo();
@@ -59,25 +59,29 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
                 player1->removeTemporaryObstacles();
                 if (not isPathFound) {
                     logger->logInfo("No path found, re-routing will be unsuccessful")->endLineInfo();
-                    if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
+                    isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+                    if (not isPathFound) {
                         logger->logInfo("ERROR: NO PATH FOUND. USE CASE FAILED")->endLineInfo();
                     }
                 }
             }
-            logger->logDebug("Attempting to re-route")->endLineDebug();
-            // observe again after re-routing
-            int direction = currentObservation.direction;
-            int isPlayerInHotPursuit = currentObservation.isPlayerInHotPursuit;
-            currentObservation = observation();
-            // ignore the last action. Observe with previous to last action.
-            player1->observe(currentObservation, grid, previousAction, previousActionError, isPlayerInHotPursuit, direction);
-            action = movePlayer(grid, currentObservation, &actionError);
+            if (isPathFound) {
+                logger->logDebug("Attempting to re-route")->endLineDebug();
+                // observe again after re-routing
+                int direction = currentObservation.direction;
+                int isPlayerInHotPursuit = currentObservation.isPlayerInHotPursuit;
+                currentObservation = observation();
+                // ignore the last action. Observe with previous to last action.
+                player1->observe(currentObservation, grid, previousAction, previousActionError, isPlayerInHotPursuit, direction);
+                action = movePlayer(grid, currentObservation, &actionError);
+            }
         }
 
         previousAction = action;
         previousActionError = actionError;
 
         fight(grid);
+
         // Enemy operations
         if (player1->life_left > 0 and not isDestinationReached()) {
             moveEnemies(grid, currentObservation, player1->timeStep);
@@ -86,15 +90,21 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
             fight(grid);
             markDeadEnemies(enemiesInThisRound);
         }
+
         logger->printBoardDebug(grid);
         player1->publishOnUI(enemiesInThisRound);
         ++player1->timeStep;
 
         // Recover from bad stuck state if possible
-        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK or isStuckAtBorder()) {
+        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
             if (player1->isSimpleAstarPlayer) {
+                logger->logInfo("Baseline Player stuck")->endLineInfo();
                 player1->isSimplePlayerStuckDontReroute = true;
+            } else if (player1->isPotentialFieldPlayer) {
+                logger->logInfo("PF Player stuck")->endLineInfo();
+                player1->isPotentialFieldPlayerStuck = true;
             } else {
+                logger->logInfo("Player stuck, attempting to re-route")->endLineInfo();
                 if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
                     logger->logInfo("ERROR: Player stuck and recovery not possible")->endLineInfo();
                     break;
@@ -103,6 +113,8 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         } else {
             if (player1->isSimpleAstarPlayer) {
                 player1->isSimplePlayerStuckDontReroute = false;
+            } else if (player1->isPotentialFieldPlayer) {
+                player1->isPotentialFieldPlayerStuck = false;
             }
         }
 
@@ -207,6 +219,16 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
     int nextAction;
     if (player1->isSimpleAstarPlayer) {
         nextAction = ACTION_STRAIGHT;
+
+    } else if (player1->isPotentialFieldPlayer) {
+        // if stuck follow baseline behavior
+        if(player1->isPotentialFieldPlayerStuck) {
+            nextAction = ACTION_STRAIGHT;
+        } else {
+            // move in the direction from high to low potential
+            nextAction = -1;
+            player1->moveWithPotentialField();
+        }
     } else {
         nextAction = player1->selectAction(currentObservation);
 
@@ -235,8 +257,6 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
         case ACTION_DODGE_RIGHT:
             *error = setDodgeRightActionCoordinates(player1->current_x, player1->current_y, currentObservation.direction);
             break;
-        default:
-            logger->logInfo("ERROR: Wrong next action")->endLineInfo();
     }
     if(*error != -1) {
         player1->distanceTravelled++;

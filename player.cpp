@@ -140,19 +140,39 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     ob.destinationX = this->destination_x;
     ob.destinationY = this->destination_y;
 
-    if (isSimpleAstarPlayer and (not isSimplePlayerStuckDontReroute) and (current_x != destination_x or current_y != destination_y)) {
-        if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+    if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
+        if(not isSimplePlayerStuckDontReroute) {
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+                }
             }
+        }
+        ob.locateTrajectoryAndDirection(fp);
+        ob.locateRelativeTrajectory();
+    }
+
+    if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
+        if(isPotentialFieldPlayerStuck) {
+            // Behave like baseline A* player if stuck
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+                }
+            }
+            ob.locateTrajectoryAndDirection(fp);
+            ob.locateRelativeTrajectory();
+        } else {
+            pfUtil.evaluateSurroundingPotentialField(current_x, current_y, hashMapEnemies, grid);
         }
     }
 
     ob.findDestination(isTrainingMode and not stopLearning);
-    ob.locateTrajectoryAndDirection(fp);
-    ob.locateRelativeTrajectory();
 
-    if (not isSimpleAstarPlayer) {
+    if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
+
+        ob.locateTrajectoryAndDirection(fp);
+        ob.locateRelativeTrajectory();
 
         ob.isTrueLastActionLeftOrRight = (lastAction == ACTION_DODGE_LEFT or lastAction == ACTION_DODGE_RIGHT) ? 1 : 0;
         ob.recordFOVForCNN(cnnController, fp);
@@ -254,6 +274,9 @@ void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
     damage = 0;
     maxMemoryUsed = 0;
 
+    if(isPotentialFieldPlayer) {
+        pfUtil.setDestination(dest_x, dest_y);
+    }
 }
 
 int player::selectAction(const observation& currentState) {
@@ -390,22 +413,27 @@ void player::enableBaseLinePlayer() {
     isSimpleAstarPlayer = true;
 }
 
+// only for enemies that are alerted
 void player::populateEnemyObstacles(vector<std::vector<int>> &gridTemp, bool dontGoClose) {
     logger->logDebug("populateEnemyObstacles")->endLineDebug();
-    for (const auto& enemyIterator : hashMapEnemies) {
-        auto e = enemyIterator.second;
-        if (max(abs(current_x - e.current_x), abs(current_y - e.current_y)) <= VISION_RADIUS) {
-            if (dontGoClose) {
-                // surround enemy with obstacles
-                for(int i=e.current_x - 1; i<=e.current_x + 1; i++) {
-                    for(int j=e.current_y - 1; j<=e.current_y + 1; j++) {
-                        if(i>=0 and i<GRID_SPAN and j >=0 and j<GRID_SPAN and gridTemp[i][j] != PLAYER_ID) {
-                            gridTemp[i][j] = -e.id;
+
+    for(int i = current_x - ENEMY_VISION_RADIUS; i <= current_x + ENEMY_VISION_RADIUS; i++) {
+        for(int j = current_y - ENEMY_VISION_RADIUS; j <= current_y + ENEMY_VISION_RADIUS; j++) {
+            if(i >= 0 and i < GRID_SPAN and j >= 0 and j < GRID_SPAN and grid[i][j] != PLAYER_ID and grid[i][j] > 0) {
+                const auto &e = hashMapEnemies.find(grid[i][j])->second;
+                if (dontGoClose) {
+                    // surround enemy with obstacles
+                    for(int x = e.current_x - 1; x <= e.current_x + 1; x++) {
+                        for(int y = e.current_y - 1; y <= e.current_y + 1; y++) {
+                            if(x >= 0 and x < GRID_SPAN and y >= 0 and y < GRID_SPAN
+                            and gridTemp[x][y] >= 0 and gridTemp[x][y] != PLAYER_ID) {
+                                gridTemp[x][y] = -e.id;
+                            }
                         }
                     }
+                } else {
+                    gridTemp[e.current_x][e.current_y] = -e.id;
                 }
-            } else {
-                gridTemp[e.current_x][e.current_y] = -e.id;
             }
         }
     }
@@ -532,6 +560,16 @@ void player::enableUI() {
 
 void player::enableInfiniteLife() {
     infiniteLife = true;
+}
+
+void player::enablePotentialFieldPlayer() {
+    isPotentialFieldPlayer = true;
+}
+
+void player::moveWithPotentialField() {
+    if (isPotentialFieldPlayer) {
+        pfUtil.moveToLowestPotentialCell(current_x, current_y);
+    }
 }
 
 

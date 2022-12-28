@@ -29,6 +29,7 @@
 //#include "DQN/DDQN/RLNN_Agent.h"
 #include "DQN/Vanilla-DQN/RLNN_Agent.h"
 //#include "DQN/dueling-DQN-bounded/RLNN_Agent.h"
+#include "PotentialFieldPlayerUtil.h"
 
 using namespace RTS;
 
@@ -48,6 +49,8 @@ class player : public RLNN_Agent {
 
     vector<std::vector<int>> grid;
     CNN_controller cnnController;
+
+    PotentialFieldPlayerUtil pfUtil;
 
     std::mutex safeTrainingExploration;
     std::condition_variable explorationOpportunity;
@@ -98,6 +101,10 @@ public:
 
     bool isSimpleAstarPlayer = false;
     bool isSimplePlayerStuckDontReroute = false;
+
+    bool isPotentialFieldPlayer = false;
+    bool isPotentialFieldPlayerStuck = false;
+
     int timeStep;
 
     int damage = 0;
@@ -147,6 +154,8 @@ public:
 
     void enableBaseLinePlayer();
 
+    void enablePotentialFieldPlayer();
+
     bool isNextStateSafeEnough();
 
     bool isInference();
@@ -168,6 +177,8 @@ public:
     void enableUI();
 
     void enableInfiniteLife();
+
+    void moveWithPotentialField();
 
     /// Testing
 #ifdef TESTING

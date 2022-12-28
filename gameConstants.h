@@ -140,6 +140,11 @@ const int LENGTH_UI_FRAME = 32 * GRID_SPAN;
 
 const int MAX_VISITED_FOR_STUCK = 5;
 
+const double POTENTIAL_FIELD_ATTRACTION_C = 90;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 130; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
+const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 5;
+const int MAX_POTENTIAL_TRAIL_SIZE = 4;
+
 namespace RTS {
     enum LOG_LEVEL {
         INFO,

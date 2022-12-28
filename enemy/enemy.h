@@ -37,7 +37,7 @@ public:
     int lastKnownPlayerY = -1;
 
     int max_moves = ENEMY_MAX_MOVES;
-    int enemyVisionRadius = ENEMY_VISION_RADIUS;
+    const int enemyVisionRadius = ENEMY_VISION_RADIUS;
 
     /**
      * UI
@@ -66,7 +66,7 @@ public:
     }
 
     // returns true if enemy actually moved
-    bool doNextMove(const int time, vector<std::vector<int>> &grid, playerInfo pl_info = {});
+    bool doNextMove(int time, vector<std::vector<int>> &grid, playerInfo pl_info = {});
     // returns true if base is reached
     bool moveToBase(vector<std::vector<int>> &grid);
     int getAttackPoints();
