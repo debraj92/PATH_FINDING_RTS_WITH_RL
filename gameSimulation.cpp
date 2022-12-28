@@ -16,7 +16,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
     logger->logDebug("gameSimulation::play")->endLineDebug();
     player1->countPathLengthToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
     populateEnemies(grid, false);
-    if (not player1->isSimpleAstarPlayer) {
+    if (not player1->isSimpleAstarPlayer and not player1->isPotentialFieldPlayer) {
         bool isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
         if (not isPathFound) {
             logger->logInfo("No path found, ignoring navigation")->endLineInfo();

@@ -117,54 +117,72 @@ void PotentialFieldPlayerUtil::evaluateSurroundingPotentialField(int player_x, i
 void PotentialFieldPlayerUtil::moveToLowestPotentialCell(int &player_x, int &player_y) {
 
     attractionNormalizingFactor = pow(player_x - destination_x, 2) + pow(player_y - destination_y, 2);
-    double maxAttraction = 1000000;
+    double maxAttractionPotential = 1000000;
     int selectedDirection = 0;
+    double attractionPotential;
 
     if(lowestPotential == surroundingPotentialField[N]) {
-        maxAttraction = evaluateAttraction(player_x - 1, player_y);
+        maxAttractionPotential = evaluateAttraction(player_x - 1, player_y);
         selectedDirection = N;
     }
 
-    double attraction = evaluateAttraction(player_x - 1, player_y - 1);
-    if(lowestPotential == surroundingPotentialField[NW] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = NW;
+    if(lowestPotential == surroundingPotentialField[NW]) {
+        attractionPotential = evaluateAttraction(player_x - 1, player_y - 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = NW;
+        }
     }
 
-    attraction = evaluateAttraction(player_x, player_y - 1);
-    if(lowestPotential == surroundingPotentialField[W] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = W;
+    if(lowestPotential == surroundingPotentialField[W]) {
+        attractionPotential = evaluateAttraction(player_x, player_y - 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = W;
+        }
     }
 
-    attraction = evaluateAttraction(player_x + 1, player_y - 1);
-    if(lowestPotential == surroundingPotentialField[SW] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = SW;
+    if(lowestPotential == surroundingPotentialField[SW]) {
+        attractionPotential = evaluateAttraction(player_x + 1, player_y - 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = SW;
+        }
     }
 
-    attraction = evaluateAttraction(player_x + 1, player_y);
-    if(lowestPotential == surroundingPotentialField[S] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = S;
+
+    if(lowestPotential == surroundingPotentialField[S]) {
+        attractionPotential = evaluateAttraction(player_x + 1, player_y);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = S;
+        }
     }
 
-    attraction = evaluateAttraction(player_x + 1, player_y + 1);
-    if(lowestPotential == surroundingPotentialField[SE] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = SE;
+
+    if(lowestPotential == surroundingPotentialField[SE]) {
+        attractionPotential = evaluateAttraction(player_x + 1, player_y + 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = SE;
+        }
     }
 
-    attraction = evaluateAttraction(player_x, player_y + 1);
-    if(lowestPotential == surroundingPotentialField[E] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = E;
+
+    if(lowestPotential == surroundingPotentialField[E]) {
+        attractionPotential = evaluateAttraction(player_x, player_y + 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = E;
+        }
     }
 
-    attraction = evaluateAttraction(player_x - 1, player_y + 1);
-    if(lowestPotential == surroundingPotentialField[NE] and attraction < maxAttraction) {
-        maxAttraction = attraction;
-        selectedDirection = NE;
+    if(lowestPotential == surroundingPotentialField[NE]) {
+        attractionPotential = evaluateAttraction(player_x - 1, player_y + 1);
+        if (attractionPotential < maxAttractionPotential) {
+            maxAttractionPotential = attractionPotential;
+            selectedDirection = NE;
+        }
     }
     addToPotentialTrail(player_x, player_y);
 

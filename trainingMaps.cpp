@@ -377,7 +377,6 @@ trainingMaps::trainingMaps(bool isTesting) {
         isMap10Cached = false;
 
     } else {
-
         gameMaps.emplace_back(&trainingMaps::createMap1);
         gameMaps.emplace_back(&trainingMaps::createMap2);
         gameMaps.emplace_back(&trainingMaps::createMap3);
@@ -394,7 +393,6 @@ trainingMaps::trainingMaps(bool isTesting) {
         gameMaps.emplace_back(&trainingMaps::createMap14);
         gameMaps.emplace_back(&trainingMaps::createMap15);
         gameMaps.emplace_back(&trainingMaps::createMap16);
-
 
         isMap1Cached = false;
         isMap2Cached = false;
@@ -420,6 +418,7 @@ trainingMaps::trainingMaps(bool isTesting) {
 void trainingMaps::generateNextMap(std::vector<std::vector<int>>& grid, std::vector<enemy>& enemies) {
     clearMapAndEnemies(grid, enemies);
     (this->*gameMaps[index])(grid, enemies);
+    logger->logInfo("Map No. : ")->logInfo(index)->endLineInfo();
     index = (index + 1) % gameMaps.size();
     logger->printBoardDebug(grid);
 }
@@ -530,11 +529,10 @@ void trainingMaps::setSourceAndDestinationRotating(int &startX, int &startY, int
 
 void trainingMaps::setSourceAndDestinationFixed(int &startX, int &startY, int &endX,
                                                    int &endY) {
-
-    startX = 0;
-    startY = 22;
-    endX = 26;
-    endY = 5;
+    startX = 20;
+    startY = 26;
+    endX = 11;
+    endY = 0;
 }
 
 void trainingMaps::clearMapAndEnemies(vector<std::vector<int>> &grid, std::vector<enemy>& enemies) {
