@@ -44,7 +44,8 @@ add_executable(example example.cpp fixedobstacles.h fixedobstacles.cpp gameConst
         DQN/Vanilla-DQN/DQNNet.cpp DQN/Vanilla-DQN/DQNNet.h DQN/Vanilla-DQN/RLNN_Agent.cpp DQN/Vanilla-DQN/RLNN_Agent.h
         #DQN/dueling-DQN-bounded/DQNNet.cpp DQN/dueling-DQN-bounded/DQNNet.h DQN/dueling-DQN-bounded/RLNN_Agent.cpp DQN/dueling-DQN-bounded/RLNN_Agent.h
         Logger.cpp Logger.h trainingMaps.cpp trainingMaps.h testing.h FOV_CNN/CNN_controller.cpp FOV_CNN/CNN_controller.h FOV_CNN/FOV_Filters.cpp FOV_CNN/FOV_Filters.h dist/json/json.h dist/json/json-forwards.h dist/jsoncpp.cpp JsonParser.cpp JsonParser.h
-        UI/SimpleUIView.cpp UI/SimpleUIView.h GameController.cpp GameController.h UI/TileMap.h enemy/enemyUIData.h)
+        UI/SimpleUIView.cpp UI/SimpleUIView.h GameController.cpp GameController.h UI/TileMap.h enemy/enemyUIData.h
+        PotentialFieldPlayerUtil.cpp PotentialFieldPlayerUtil.h)
 
 target_include_directories(example PUBLIC ${xtensor_INCLUDE_DIRS})
 target_link_libraries(example "${TORCH_LIBRARIES}" xtensor ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${OPENGL_LIBRARY} OpenMP::OpenMP_CXX sfml-graphics)

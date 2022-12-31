@@ -140,19 +140,39 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     ob.destinationX = this->destination_x;
     ob.destinationY = this->destination_y;
 
-    if (isSimpleAstarPlayer and (not isSimplePlayerStuckDontReroute) and (current_x != destination_x or current_y != destination_y)) {
-        if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+    if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
+        if(not isSimplePlayerStuckDontReroute) {
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+                }
             }
+        }
+        ob.locateTrajectoryAndDirection(fp);
+        ob.locateRelativeTrajectory();
+    }
+
+    if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
+        if(isPotentialFieldPlayerStuck) {
+            // Behave like baseline A* player if stuck
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
+                }
+            }
+            ob.locateTrajectoryAndDirection(fp);
+            ob.locateRelativeTrajectory();
+        } else {
+            pfUtil.evaluateSurroundingPotentialField(current_x, current_y, hashMapEnemies, grid);
         }
     }
 
     ob.findDestination(isTrainingMode and not stopLearning);
-    ob.locateTrajectoryAndDirection(fp);
-    ob.locateRelativeTrajectory();
 
-    if (not isSimpleAstarPlayer) {
+    if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
+
+        ob.locateTrajectoryAndDirection(fp);
+        ob.locateRelativeTrajectory();
 
         ob.isTrueLastActionLeftOrRight = (lastAction == ACTION_DODGE_LEFT or lastAction == ACTION_DODGE_RIGHT) ? 1 : 0;
         ob.recordFOVForCNN(cnnController, fp);
@@ -253,6 +273,10 @@ void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
     distanceTravelled = 0;
     damage = 0;
     maxMemoryUsed = 0;
+
+    if(isPotentialFieldPlayer) {
+        pfUtil.setDestination(dest_x, dest_y);
+    }
 
 }
 
@@ -549,6 +573,16 @@ void player::checkPointModel (int episode) {
     } else if ((not isCheckPoint2Complete) and percentage_complete > 93 and percentage_complete <= 96) {
         saveModel(DQN_MODEL_PATH_CHKPOINT_2);
         isCheckPoint2Complete = true;
+    }
+}
+
+void player::enablePotentialFieldPlayer() {
+    isPotentialFieldPlayer = true;
+}
+
+void player::moveWithPotentialField() {
+    if (isPotentialFieldPlayer) {
+        pfUtil.moveToLowestPotentialCell(current_x, current_y);
     }
 }
 

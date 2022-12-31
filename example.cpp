@@ -153,6 +153,7 @@ int main() {
     player player1(false);
     /// Enable baseline for comparison
     //player1.enableBaseLinePlayer();
+    //player1.enablePotentialFieldPlayer();
     TestResult t{};
     runTesting(player1);
 

@@ -38,6 +38,7 @@ void GameController::playGameAsynchronous(player &player1, trainingMaps &tm) {
 
     /// Enable baseline for comparison
     //player1.enableBaseLinePlayer();
+    //player1.enablePotentialFieldPlayer();
 
     player1.playGame(grid, enemies, sx, sy, dx, dy, t);
 
