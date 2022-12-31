@@ -257,8 +257,10 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
         case ACTION_DODGE_RIGHT:
             *error = setDodgeRightActionCoordinates(player1->current_x, player1->current_y, currentObservation.direction);
             break;
+        default:
+            *error = 0;
     }
-    if(*error != -1) {
+    if(*error != -1 and (player1->current_x != savedLocationPlayerX or player1->current_y != savedLocationPlayerY)) {
         player1->distanceTravelled++;
     }
     grid[savedLocationPlayerX][savedLocationPlayerY] = 0;

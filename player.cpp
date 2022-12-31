@@ -143,7 +143,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(not isSimplePlayerStuckDontReroute) {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                logger->logInfo("Player could not find path to destination, will wait")->endLineInfo();
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
             }
         }
         ob.locateTrajectoryAndDirection(fp);
