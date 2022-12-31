@@ -420,6 +420,7 @@ trainingMaps::trainingMaps(bool isTesting) {
 void trainingMaps::generateNextMap(std::vector<std::vector<int>>& grid, std::vector<enemy>& enemies) {
     clearMapAndEnemies(grid, enemies);
     (this->*gameMaps[index])(grid, enemies);
+    logger->logInfo("Map No. : ")->logInfo(index)->endLineInfo();
     index = (index + 1) % gameMaps.size();
     logger->printBoardDebug(grid);
 }

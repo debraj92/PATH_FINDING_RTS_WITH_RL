@@ -79,6 +79,7 @@ bool AStar_::findPathToDestination() {
     }
     unblockDestinationCoordinate();
     maxSizeOfOpenList = openList.getMaxSize() > maxSizeOfOpenList ? openList.getMaxSize() : maxSizeOfOpenList;
+    childParent.clear();
     return false;
 
 }
@@ -139,6 +140,7 @@ node_ AStar_::getNextNode(node_& current) {
 }
 
 bool AStar_::isOnPath(node_& current) {
+    if(childParent.empty()) return false;
     return childParent.find(current) != childParent.end();
 }
 

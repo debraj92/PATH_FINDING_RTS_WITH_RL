@@ -94,11 +94,13 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         ++player1->timeStep;
 
         // Recover from bad stuck state if possible
-        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK or isStuckAtBorder()) {
+        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
             logger->logDebug("Player stuck, attempting to re-route")->endLineDebug();
             if (player1->isSimpleAstarPlayer) {
+                logger->logInfo("Baseline Player stuck")->endLineInfo();
                 player1->isSimplePlayerStuckDontReroute = true;
             } else {
+                logger->logInfo("Player stuck, attempting to re-route")->endLineInfo();
                 if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
                     logger->logInfo("ERROR: Player stuck and recovery not possible")->endLineInfo();
                     break;
