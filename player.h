@@ -16,6 +16,7 @@
 #include "FOV_CNN/CNN_controller.h"
 #include "UI/SimpleUIView.h"
 #include "enemy/enemyUIData.h"
+#include "PotentialFieldPlayerUtil.h"
 
 #include <thread>
 
@@ -54,6 +55,8 @@ class player : public RLNN_Agent {
 
     vector<std::vector<int>> grid;
     CNN_controller cnnController;
+
+    PotentialFieldPlayerUtil pfUtil;
 
     std::mutex safeTrainingExploration;
     std::condition_variable explorationOpportunity;
@@ -104,6 +107,10 @@ public:
 
     bool isSimpleAstarPlayer = false;
     bool isSimplePlayerStuckDontReroute = false;
+
+    bool isPotentialFieldPlayer = false;
+    bool isPotentialFieldPlayerStuck = false;
+
     int timeStep;
 
     int damage = 0;
@@ -153,6 +160,8 @@ public:
 
     void enableBaseLinePlayer();
 
+    void enablePotentialFieldPlayer();
+
     bool isNextStateSafeEnough();
 
     bool isInference();
@@ -174,6 +183,8 @@ public:
     void enableUI();
 
     void enableInfiniteLife();
+
+    void moveWithPotentialField();
 
     void checkPointModel(int episode);
 
