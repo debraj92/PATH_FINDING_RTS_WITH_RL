@@ -105,6 +105,9 @@ public:
     bool isPotentialFieldPlayer = false;
     bool isPotentialFieldPlayerStuck = false;
 
+    bool isRLPlayerStuck = false;
+    int RLPlayerStuckTimer = 0;
+
     int timeStep;
 
     int damage = 0;
@@ -134,6 +137,7 @@ public:
     void observe(observation &ob, std::vector<std::vector<int>> &grid, int lastAction, int actionError, bool wasPreviousStateHotPursuit, int previousStateDirection);
 
     bool findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, bool dontGoCloseToEnemies=false);
+    bool findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x, int dst_y);
 
     // ONLY FOR STATS
     void countPathLengthToDestination(int src_x, int src_y, int dst_x, int dst_y);
