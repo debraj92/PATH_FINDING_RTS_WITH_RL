@@ -115,7 +115,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
                 player1->isPotentialFieldPlayerStuck = false;
             } else {
                 player1->isRLPlayerStuck = false;
-                player1->RLPlayerStuckTimeout = 0;
+                player1->RLPlayerStuckTimer = 0;
             }
         }
 
