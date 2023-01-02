@@ -104,17 +104,18 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
                 logger->logInfo("PF Player stuck")->endLineInfo();
                 player1->isPotentialFieldPlayerStuck = true;
             } else {
-                logger->logInfo("Player stuck, attempting to re-route")->endLineInfo();
-                if (not player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y)) {
-                    logger->logInfo("ERROR: Player stuck and recovery not possible")->endLineInfo();
-                    break;
-                }
+                logger->logInfo("RL Player stuck, will re-route")->endLineInfo();
+                player1->isRLPlayerStuck = true;
+                ++player1->RLPlayerStuckTimer;
             }
         } else {
             if (player1->isSimpleAstarPlayer) {
                 player1->isSimplePlayerStuckDontReroute = false;
             } else if (player1->isPotentialFieldPlayer) {
                 player1->isPotentialFieldPlayerStuck = false;
+            } else {
+                player1->isRLPlayerStuck = false;
+                player1->RLPlayerStuckTimer = 0;
             }
         }
 
@@ -230,7 +231,11 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
             player1->moveWithPotentialField();
         }
     } else {
-        nextAction = player1->selectAction(currentObservation);
+        if(player1->RLPlayerStuckTimer >= MAX_VISITED_FOR_STUCK) {
+            nextAction = ACTION_STRAIGHT;
+        } else {
+            nextAction = player1->selectAction(currentObservation);
+        }
 
         if ((*error != NEXT_Q_TOO_LOW_ERROR) and player1->isInference() and (not player1->isNextStateSafeEnough())) {
             // no point in proceeding. Need to re-route
@@ -257,8 +262,10 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
         case ACTION_DODGE_RIGHT:
             *error = setDodgeRightActionCoordinates(player1->current_x, player1->current_y, currentObservation.direction);
             break;
+        default:
+            *error = 0;
     }
-    if(*error != -1) {
+    if(*error != -1 and (player1->current_x != savedLocationPlayerX or player1->current_y != savedLocationPlayerY)) {
         player1->distanceTravelled++;
     }
     grid[savedLocationPlayerX][savedLocationPlayerY] = 0;

@@ -143,7 +143,12 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(not isSimplePlayerStuckDontReroute) {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                logger->logInfo("Player could not find path to destination, will wait")->endLineInfo();
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+            }
+        } else {
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                logger->logInfo("Player will use no enemies path")->endLineInfo();
+                findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y);
             }
         }
         ob.locateTrajectoryAndDirection(fp);
@@ -168,6 +173,10 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     ob.findDestination(isTrainingMode and not stopLearning);
 
     if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
+
+        // Is stuck, re-route. If stuck for long (RLPlayerStuckTimer), behave like baseline A*
+        if (isRLPlayerStuck and not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+        }
 
         ob.locateTrajectoryAndDirection(fp);
         ob.locateRelativeTrajectory();
@@ -200,6 +209,15 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
     std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
     populateEnemyObstacles(gridTemporary, dontGoCloseToEnemies);
     fp = std::make_shared<findPath>(gridTemporary, src_x, src_y, dst_x, dst_y);
+    bool isPathFound = fp->findPathToDestinationDeferred();
+    int memoryUsed = fp->getMaxMemoryUsed();
+    maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
+    return isPathFound;
+}
+
+bool player::findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x, int dst_y) {
+    logger->logDebug("findPathToDestination")->endLineDebug();
+    fp = std::make_shared<findPath>(grid, src_x, src_y, dst_x, dst_y);
     bool isPathFound = fp->findPathToDestinationDeferred();
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
