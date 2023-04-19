@@ -20,8 +20,18 @@ class AStarOpenList {
     float leftChild(int parentIndex);
     float rightChild(int parentIndex);
 
+    float leftChild_G(int parentIndex);
+    float rightChild_G(int parentIndex);
+
     void sink(int k);
     void swim(int k);
+
+    /**
+     * Compares two nodes by their f scores. Returns true if the left node's
+     * f score is smaller. For tie-breaking we check the g-scores. The lower g-score is
+     * preferred.
+     */
+    inline bool compareFScores(float leftF, float rightF, float leftG, float rightG);
 
 public:
     void insert(node_ fvalue);

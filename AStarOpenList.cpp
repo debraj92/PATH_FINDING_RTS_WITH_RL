@@ -5,6 +5,15 @@
 #include <iostream>
 #include "AStarOpenList.h"
 
+float AStarOpenList::leftChild_G(int parentIndex) {
+    return fscoreHeap[2*parentIndex + 1].g;
+}
+
+float AStarOpenList::rightChild_G(int parentIndex) {
+    return fscoreHeap[2*parentIndex + 2].g;
+}
+
+
 float AStarOpenList::leftChild(int parentIndex) {
     return fscoreHeap[2*parentIndex + 1].getFScore();
 }
@@ -20,10 +29,21 @@ void AStarOpenList::sink(int k) {
         rightChildIdx = 2*k + 2;
         if (rightChildIdx < size) {
             minChildIdx = rightChildIdx;
-            if (leftChild(k) < rightChild(k)) {
+            // tie-breaking with g
+            if(compareFScores(
+                    leftChild(k),
+                    rightChild(k),
+                    leftChild_G(k),
+                    rightChild_G(k))) {
+
                 minChildIdx = leftChildIdx;
             }
-            if(fscoreHeap[minChildIdx].getFScore() < fscoreHeap[k].getFScore()){
+            // tie-breaking with g
+            if(compareFScores((fscoreHeap)[minChildIdx].getFScore(),
+                              (fscoreHeap)[k].getFScore(),
+                              (fscoreHeap)[minChildIdx].g,
+                              (fscoreHeap)[k].g))
+            {
                 exchange(minChildIdx, k);
                 k = minChildIdx;
             } else {
@@ -31,7 +51,11 @@ void AStarOpenList::sink(int k) {
                 break;
             }
         } else {
-            if (leftChild(k) < fscoreHeap[k].getFScore()) {
+            // tie-breaking with g
+            if(compareFScores(leftChild(k),
+                              (fscoreHeap)[k].getFScore(),
+                              leftChild(k),
+                              (fscoreHeap)[k].g)) {
                 exchange(leftChildIdx, k);
                 k = leftChildIdx;
             } else {
@@ -46,7 +70,12 @@ void AStarOpenList::swim(int k) {
     int parent_index;
     while (k>=1) {
         parent_index = (k - 1) / 2;
-        if (fscoreHeap[k].getFScore() < fscoreHeap[parent_index].getFScore()) {
+        // tie-breaking with g
+        if(compareFScores((fscoreHeap)[k].getFScore(),
+                          (fscoreHeap)[parent_index].getFScore(),
+                          (fscoreHeap)[k].g,
+                          (fscoreHeap)[parent_index].g)) {
+
             exchange(k, parent_index);
             k = parent_index;
         } else {
@@ -58,7 +87,11 @@ void AStarOpenList::swim(int k) {
 void AStarOpenList::insert(node_ node) {
     node.heap_idx = size;
     fscoreHeap.push_back(node);
-    openList.insert(node);
+    if(size >= (fscoreHeap).size()) {
+        fscoreHeap.push_back(node);
+    } else {
+        (fscoreHeap)[size] = node;
+    }
     size++;
     maxSize = size > maxSize ? size : maxSize;
     swim(size-1);
@@ -68,9 +101,7 @@ void AStarOpenList::exchange(int idx1, int idx2) {
     if (idx1 == idx2) {
         return;
     }
-    node_ temp = fscoreHeap[idx1];
-    fscoreHeap[idx1] = fscoreHeap[idx2];
-    fscoreHeap[idx2] = temp;
+    std::swap((fscoreHeap)[idx1], (fscoreHeap)[idx2]);
 
     fscoreHeap[idx1].heap_idx = idx1;
     fscoreHeap[idx2].heap_idx = idx2;
@@ -121,4 +152,8 @@ bool AStarOpenList::updateIfBetterPath(node_& n, float gvalue) {
 
 int AStarOpenList::getMaxSize() {
     return maxSize;
+}
+
+inline bool AStarOpenList::compareFScores(float leftF, float rightF, float leftG, float rightG) {
+    return abs(leftF - rightF) < 0.001 ? (leftG < rightG) : (leftF < rightF);
 }
