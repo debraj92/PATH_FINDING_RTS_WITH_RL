@@ -142,8 +142,6 @@ public:
     // ONLY FOR STATS
     void countPathLengthToDestination(int src_x, int src_y, int dst_x, int dst_y);
 
-    bool findPathToKnownPointOnTrack(int src_x, int src_y);
-
     int selectAction(const observation& currentState);
 
     void memorizeExperienceForReplay(observation &current, observation &next, int action, float reward, bool done);

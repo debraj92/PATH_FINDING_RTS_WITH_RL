@@ -14,7 +14,7 @@
  */
 const int MAX_EPISODES = 300000;   /// Must be greater than 8
 
-const int GRID_SPAN = 27; /// >= 10 when running unit tests [7 for gameSimulation test]
+const int GRID_SPAN = 512;//27; /// >= 10 when running unit tests [7 for gameSimulation test]
 const int SESSION_TIMEOUT = GRID_SPAN * 5;
 
 const int MIN_EXPLORATION_BEFORE_TRAINING = 4;

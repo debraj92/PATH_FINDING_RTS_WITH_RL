@@ -208,8 +208,9 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
     std::vector<std::vector<int>> gridTemporary;
     std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
     populateEnemyObstacles(gridTemporary, dontGoCloseToEnemies);
-    fp = std::make_shared<findPath>(gridTemporary, src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred();
+    fp->changeMap(gridTemporary);
+    fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
+    bool isPathFound = fp->findPathToDestinationDeferred(isSimpleAstarPlayer);
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -217,8 +218,9 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
 
 bool player::findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x, int dst_y) {
     logger->logDebug("findPathToDestination")->endLineDebug();
-    fp = std::make_shared<findPath>(grid, src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred();
+    fp->changeMap(grid);
+    fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
+    bool isPathFound = fp->findPathToDestinationDeferred(isSimpleAstarPlayer);
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -230,39 +232,6 @@ void player::countPathLengthToDestination(int src_x, int src_y, int dst_x, int d
     findPath fp_(gridTemporary, src_x, src_y, dst_x, dst_y);
     fp_.findPathToDestination();
     pathLength = fp_.getCountOfNodesToDestination();
-}
-
-bool player::findPathToKnownPointOnTrack(int src_x, int src_y) {
-    logger->logDebug("findPathToKnownPointOnTrack")->endLineDebug();
-
-    std::vector<std::vector<int>> gridTemporary;
-    std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
-    populateEnemyObstacles(gridTemporary, false);
-
-    //find next free location in the existing path
-    int x = fp->knownOnTrackX;
-    int y = fp->knownOnTrackY;
-    if(x != destination_x or y != destination_y) {
-        fp->getNextPositionAfterGivenLocation(x, y, x, y);
-        while(grid[x][y] != 0) {
-            fp->getNextPositionAfterGivenLocation(x, y, x, y);
-        }
-    }
-    findPath fpTemp(gridTemporary, src_x, src_y, x, y);
-    if (not fpTemp.findPathToDestination()) {
-        gridTemporary.clear();
-        std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
-        findPath fpTemp2(gridTemporary, src_x, src_y, x, y);
-        if (not fpTemp2.findPathToDestination()) {
-            logger->logInfo("ERROR: Path to point on track not found")->endLineInfo();
-            return false;
-        }
-        fp->stitchNewPathIntoExistingAtNode(fpTemp2, x, y, src_x, src_y);
-        return true;
-    }
-    fp->stitchNewPathIntoExistingAtNode(fpTemp, x, y, src_x, src_y);
-
-    return true;
 }
 
 void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
@@ -289,7 +258,9 @@ void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
     distanceTravelled = 0;
     damage = 0;
     maxMemoryUsed = 0;
-
+    /// Create abstractions
+    fp = std::make_shared<findPath>(grid);
+    fp->createAbstractGraph();
     if(isPotentialFieldPlayer) {
         pfUtil.setDestination(dest_x, dest_y);
     }
