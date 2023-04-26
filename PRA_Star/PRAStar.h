@@ -64,7 +64,7 @@ public:
         pathRealWorld = std::make_unique<unordered_map<node_, node_, node_::node_Hash>>();
         abstractParentNodeColors = std::make_unique<unordered_set<int>>();
         createRealWorld(grid);
-        abstractGraph = std::make_unique<AbstractGraph>(*realWorld);
+        abstractGraph = std::make_unique<AbstractGraph>(*realWorld, ABSTRACT_SECTOR_PRA_STAR);
         initStartState(startX, startY);
         initGoalState(endX, endY);
         initialized = true;
@@ -75,7 +75,7 @@ public:
         pathRealWorld = std::make_unique<unordered_map<node_, node_, node_::node_Hash>>();
         abstractParentNodeColors = std::make_unique<unordered_set<int>>();
         createRealWorld(grid);
-        abstractGraph = std::make_unique<AbstractGraph>(*realWorld);
+        abstractGraph = std::make_unique<AbstractGraph>(*realWorld, ABSTRACT_SECTOR_PRA_STAR);
     }
 
     void createAbstractGraph();

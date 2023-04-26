@@ -17,7 +17,7 @@ using namespace std;
 
 class AbstractGraph : public Abstraction {
 
-    const int SECTOR_SIZE = 16;
+    const int SECTOR_SIZE;
     unordered_map<int, AbstractNode> colorAbstractNodeMap;
 
     RealWorld &rworld;
@@ -48,7 +48,7 @@ class AbstractGraph : public Abstraction {
 
 public:
 
-    AbstractGraph(RealWorld &realWorld) : rworld(realWorld) {
+    AbstractGraph(RealWorld &realWorld, int sectorSize) : rworld(realWorld), SECTOR_SIZE(sectorSize) {
 
     }
 
