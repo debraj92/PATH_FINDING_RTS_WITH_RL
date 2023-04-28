@@ -159,9 +159,8 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
         if(isPotentialFieldPlayerStuck) {
             // Behave like baseline A* player if stuck
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
-                }
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+                isPotentialFieldPlayerStuck = false;
             }
             ob.locateTrajectoryAndDirection(fp);
             ob.locateRelativeTrajectory();
@@ -557,6 +556,10 @@ void player::moveWithPotentialField() {
     if (isPotentialFieldPlayer) {
         pfUtil.moveToLowestPotentialCell(current_x, current_y);
     }
+}
+
+bool player::isInfiniteLife() {
+    return infiniteLife;
 }
 
 

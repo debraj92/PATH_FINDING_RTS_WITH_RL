@@ -41,7 +41,6 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         auto t1 = high_resolution_clock::now();
         logger->logDebug("Time ")->logDebug(player1->timeStep)->endLineDebug();
         logger->logDebug("player (" + to_string(player1->current_x) + ", "+to_string(player1->current_y)+")")->endLineDebug();
-
         // Next Action
         actionError = 0;
         action = movePlayer(grid, currentObservation, &actionError);
@@ -58,8 +57,8 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
                 isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
                 player1->removeTemporaryObstacles();
                 if (not isPathFound) {
-                    logger->logInfo("No path found, re-routing will be unsuccessful")->endLineInfo();
-                    isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+                    //logger->logInfo("No path found, re-routing will be unsuccessful")->endLineInfo();
+                    isPathFound = player1->findPathToDestinationWithNoEnemies(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
                     if (not isPathFound) {
                         logger->logInfo("ERROR: NO PATH FOUND. USE CASE FAILED")->endLineInfo();
                     }
@@ -98,13 +97,13 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         // Recover from bad stuck state if possible
         if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
             if (player1->isSimpleAstarPlayer) {
-                logger->logInfo("Baseline Player stuck")->endLineInfo();
+                //logger->logInfo("Baseline Player stuck")->endLineInfo();
                 player1->isSimplePlayerStuckDontReroute = true;
             } else if (player1->isPotentialFieldPlayer) {
-                logger->logInfo("PF Player stuck")->endLineInfo();
+                //logger->logInfo("PF Player stuck")->endLineInfo();
                 player1->isPotentialFieldPlayerStuck = true;
             } else {
-                logger->logInfo("RL Player stuck, will re-route")->endLineInfo();
+                //logger->logInfo("RL Player stuck, will re-route")->endLineInfo();
                 player1->isRLPlayerStuck = true;
                 ++player1->RLPlayerStuckTimer;
             }
@@ -351,7 +350,9 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
             ++enemy_iterator;
         }
     }
-
+    if(player1->isInfiniteLife()) {
+        grid[player1->current_x][player1->current_y] = 9;
+    }
 }
 
 float gameSimulation::calculateReward(const observation &nextObservation, int action, int action_error) {

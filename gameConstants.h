@@ -42,8 +42,8 @@ const int VISION_RADIUS = 4;
 const int FOV_WIDTH = 2 * VISION_RADIUS + 1;
 
 const int ENEMY_VISION_RADIUS = 3;
-const int ENEMY_MAX_MOVES = 8;
-const int MAX_ENEMY_DISTANCE_FOR_PURSUIT = 7;
+const int ENEMY_MAX_MOVES = 16;
+const int MAX_ENEMY_DISTANCE_FOR_PURSUIT = 20;
 
 const int GOAL_RADIUS = 1;
 
@@ -140,10 +140,12 @@ const int LENGTH_UI_FRAME = 32 * GRID_SPAN;
 
 const int MAX_VISITED_FOR_STUCK = 5;
 
-const double POTENTIAL_FIELD_ATTRACTION_C = 90;
-const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 140; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
-const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 5;
-const int MAX_POTENTIAL_TRAIL_SIZE = 4;
+const double POTENTIAL_FIELD_ATTRACTION_C = 5000;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 200; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
+const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 20;
+const int MAX_POTENTIAL_TRAIL_SIZE = 5;
+
+const int ABSTRACT_SECTOR_PRA_STAR = 16;
 
 namespace RTS {
     enum LOG_LEVEL {

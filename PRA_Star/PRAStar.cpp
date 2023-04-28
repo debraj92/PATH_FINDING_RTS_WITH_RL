@@ -68,7 +68,6 @@ PRAStar::reverseNodeLinks(node_ current, unique_ptr<unordered_map<node_, node_, 
 }
 
 void PRAStar::createAbstractGraph() {
-    cout<<"Creating abstract graph"<<endl;
     abstractGraph->createAbstractGraph();
 }
 
@@ -111,7 +110,7 @@ bool PRAStar::searchPathInRealWorldWithAstar(int parentGoal) {
     realWorld->getStart(startX, startY);
     /// Starting point should be passable coordinate. Or non-obstacle.
     if (realWorld->getRealMap()[startX][startY] < 0) {
-        cout<<"Starting point should be passable (non-obstacle) coordinate."<<endl;
+        logger->logInfo("Starting point should be passable (non-obstacle) coordinate.")->endLineInfo();
         return false;
     }
     auto root = realWorld->createNode(startX, startY);
@@ -178,8 +177,9 @@ bool PRAStar::searchPathInRealWorldWithAstar(int parentGoal) {
             }
         }
     }
+
     if (!isPathFound) {
-        cout<<"Path Not Found"<<endl;
+        logger->logDebug("Path Not Found")->endLineDebug();
     }
 
     return isPathFound;
@@ -191,7 +191,7 @@ bool PRAStar::searchPathInAbstractGraphWithAstar(unique_ptr<unordered_map<node_,
     auto startColor = abstraction->getStartColor();
 
     if (startColor == -1) {
-        cout<<"Abstract Path Not Found"<<endl;
+        logger->logDebug("Abstract Path Not Found")->endLineDebug();
         return false;
     }
     /**
@@ -238,7 +238,7 @@ bool PRAStar::searchPathInAbstractGraphWithAstar(unique_ptr<unordered_map<node_,
         }
     }
     if(!isPathFound) {
-        cout<<"Abstract Path Not Found"<<endl;
+        logger->logDebug("Abstract Path Not Found")->endLineDebug();
     }
     return isPathFound;
 }

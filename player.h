@@ -182,6 +182,8 @@ public:
 
     void moveWithPotentialField();
 
+    bool isInfiniteLife();
+
     /// Testing
 #ifdef TESTING
     ReplayMemory* getAccessToReplayMemory() {

@@ -9,6 +9,8 @@
 #include <functional>
 #include <vector>
 #include "enemy/enemy.h"
+#include "PRA_Star/RealWorld.h"
+#include "PRA_Star/AbstractGraph.h"
 #include "Logger.h"
 
 using namespace std;
@@ -19,8 +21,15 @@ class GameMaps {
 
     std::unique_ptr<Logger> logger;
 
+    void populateEnemies(vector<std::vector<int>> &grid, std::vector<enemy>& enemies);
+
+    AbstractGraph createAbstractGraph(RealWorld &rw, vector<std::vector<int>> &grid);
+
+    RealWorld createRealWorld(vector<std::vector<int>> &grid);
+
 public:
-    void generateNextMap(std::vector<std::vector<int>>& grid, std::vector<enemy>& enemies, vector<int> &uimap);
+
+    void generateNextMap(std::vector<std::vector<int>>& grid, std::vector<enemy>& enemies);
 };
 
 

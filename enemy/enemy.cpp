@@ -53,7 +53,7 @@ bool enemy::doNextMove(const int time, vector<std::vector<int>> &grid, enemy::pl
         logger->logDebug("Player in sight of enemy: ")->logDebug(id)->endLineDebug();
         isPathToBaseKnown = false;
         if (not fp->findPathToDestination()) {
-            logger->logInfo("ERROR: path to player not found, enemy-id:")->logDebug(id)->endLineInfo();
+            //logger->logInfo("ERROR: path to player not found, enemy-id:")->logInfo(id)->endLineInfo();
             return false;
         }
         fp->getNextPositionAfterGivenLocation(temp_current_x, temp_current_y, temp_current_x, temp_current_y);
