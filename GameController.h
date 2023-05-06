@@ -17,12 +17,18 @@ class GameController {
 
    bool isGameStopped = false;
    SimpleUIView uiView;
+   trainingMaps tm;
 
-   void playGameAsynchronous(player &player1, trainingMaps &tm);
+   void playGameAsynchronous(player &player1);
+
+    void playGameAsyncOnWarcraftMap(player &player1, vector<std::vector<int>> &grid, std::vector<enemy> &enemies);
 
 public:
 
-    void startGame();
+    GameController() : tm(true) {
+
+    }
+    void startGame(bool useDefaultMap);
 };
 
 

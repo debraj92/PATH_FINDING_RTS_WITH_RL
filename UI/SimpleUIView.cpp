@@ -4,7 +4,6 @@
 
 #include "SimpleUIView.h"
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include "gameConstants.h"
 #include <thread>
 #include <vector>
@@ -14,38 +13,6 @@ using namespace std;
 void SimpleUIView::startGameLoop(bool &isGameStopped) {
 
     sf::RenderWindow window(sf::VideoMode(LENGTH_UI_FRAME, LENGTH_UI_FRAME), "Adversarial Navigation");
-
-    int gameMap[] =
-            {
-                    12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12,
-                    12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12, 1, 1, 1, 12, 12, 12,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    10, 10, 11, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 12, 1, 1, 1, 11, 10, 10, 1, 1, 1, 0, 0, 0,
-                    10, 10, 10, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 12, 12, 1, 1, 1, 11, 10, 10, 1, 1, 1, 0, 0, 0,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    0, 0, 0, 1, 1, 1, 10, 10, 10, 1, 1, 1, 0, 12, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 12, 11, 10,
-                    0, 0, 0, 1, 1, 1, 10, 10, 10, 1, 1, 1, 0, 0, 12, 1, 1, 1, 0, 0, 0, 1, 1, 1, 11, 10, 10,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    13, 13, 13, 1, 1, 1, 13, 13, 13, 1, 1, 1, 0, 0, 0, 1, 1, 1, 10, 10, 10, 1, 1, 1, 11, 10, 11,
-                    13, 13, 13, 1, 1, 1, 13, 13, 13, 1, 1, 1, 0, 0, 0, 1, 1, 1, 10, 10, 10, 1, 1, 1, 11, 10, 11,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    11, 11, 11, 1, 1, 1, 11, 11, 11, 1, 1, 1, 13, 13, 13, 1, 1, 1, 13, 13, 13, 1, 1, 1, 11, 10, 11,
-                    11, 10, 11, 1, 1, 1, 10, 10, 10, 1, 1, 1, 13, 13, 13, 1, 1, 1, 13, 13, 13, 1, 1, 1, 10, 10, 10,
-                    11, 11, 10, 1, 1, 1, 10, 10, 10, 1, 1, 1, 13, 13, 13, 1, 1, 1, 13, 13, 13, 1, 1, 1, 11, 10, 10
-            };
-
 
     vector<int> tilesEmpty(std::begin(gameMap), std::end(gameMap));
     vector<int> tiles;
@@ -129,7 +96,7 @@ void SimpleUIView::populateInfo(int plX, int plY, int destX, int destY, int srcX
 
 
 void SimpleUIView::drawOnCanvas(TileMap &map, vector<int> &tiles) {
-    if (!map.load(TILES_RESOURCES, sf::Vector2u(32, 32), &tiles[0], 27, 27))
+    if (!map.load(TILES_RESOURCES, sf::Vector2u(TILE_SCALE, TILE_SCALE), &tiles[0], GRID_SPAN, GRID_SPAN))
     {
         logger->logInfo("Error loading game tiles")->endLineInfo();
         return;
@@ -173,4 +140,19 @@ void SimpleUIView::updateMapWithCurrentState(vector<int> &tiles) {
 
 int SimpleUIView::convert2DIndexTo1D(int x, int y) {
     return x * GRID_SPAN + y;
+}
+
+void SimpleUIView::initGameMap(vector<std::vector<int>> &grid) {
+    int i = 0;
+    for (int r=0; r<GRID_SPAN; ++r) {
+        for (int c=0; c<GRID_SPAN; ++c) {
+            if (grid[r][c] == 0) {
+                gameMap[i++] = 1;
+            } else if (grid[r][c] == -1) {
+                gameMap[i++] = 0;
+            } else {
+                gameMap[i++] = -grid[r][c];
+            }
+        }
+    }
 }

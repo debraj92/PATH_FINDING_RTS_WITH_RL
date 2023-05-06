@@ -44,9 +44,9 @@ class PRAStar {
 
     bool isDestinationFound(const node_ &node);
 
-    void orderNodeLinks(node_ &root, node_ &dest);
+    void orderNodeLinks(node_ root, node_ dest);
 
-    void eraseDestinationNode(node_ &dest);
+    void eraseDestinationNode(node_ dest);
 
     void addEdge(int nextX, int nextY, vector<pair<int, int>> &nodes);
 
@@ -102,7 +102,7 @@ public:
 
     unique_ptr<RealWorld>& accessRealWorld();
 
-    void printPathNodes(unique_ptr<unordered_map<node_, node_, node_::node_Hash>> &childParent, const node_ &root, const node_ &destination);
+    void printPathNodes(unique_ptr<unordered_map<node_, node_, node_::node_Hash>> &childParent, node_ &root, const node_ &destination);
 
     float computeGCost(node_ first, node_ second);
 

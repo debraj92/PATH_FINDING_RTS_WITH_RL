@@ -147,7 +147,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
             }
         } else {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                logger->logInfo("Player will use no enemies path")->endLineInfo();
+                logger->logDebug("Player will use no enemies path")->endLineDebug();
                 findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y);
             }
         }

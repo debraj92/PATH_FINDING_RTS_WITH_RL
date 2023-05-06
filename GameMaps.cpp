@@ -4,11 +4,16 @@
 
 #include "GameMaps.h"
 #include "gameConstants.h"
+#include "JsonParser.h"
+#include "dist/json/json.h"
+#include <iostream>
+#include <fstream>
 
-void GameMaps::generateNextMap(vector<std::vector<int>> &grid, vector<enemy> &enemies) {
+using namespace std;
 
-    const string fileName = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-map/divideandconquer.map";
-    std::ifstream file(fileName);
+void GameMaps::generateNextMap(vector<std::vector<int>> &grid) {
+    logger->logInfo("Map: ")->logInfo(MAP_FILE)->endLineInfo();
+    std::ifstream file(MAP_FILE);
     if (file.is_open()) {
         std::string line;
         /**
@@ -33,6 +38,14 @@ void GameMaps::generateNextMap(vector<std::vector<int>> &grid, vector<enemy> &en
             for(char x: line) {
                 if(x == '.') {
                    grid[row][col] = 0;
+                } else if (x == '@') {
+                    grid[row][col] = -12;
+                } else if (x == 'W') {
+                    grid[row][col] = -10;
+                } else if (x == 'T') {
+                    grid[row][col] = -11;
+                } else if (x == 'S') {
+                    grid[row][col] = -13;
                 } else {
                     grid[row][col] = -1;
                 }
@@ -43,10 +56,8 @@ void GameMaps::generateNextMap(vector<std::vector<int>> &grid, vector<enemy> &en
         }
         file.close();
     } else {
-        throw std::runtime_error("Could not open file: " + fileName);
+        throw std::runtime_error("Could not open file: " + MAP_FILE);
     }
-
-    populateEnemies(grid, enemies);
 }
 
 AbstractGraph GameMaps::createAbstractGraph(RealWorld &rw, vector<std::vector<int>> &grid) {
@@ -54,6 +65,38 @@ AbstractGraph GameMaps::createAbstractGraph(RealWorld &rw, vector<std::vector<in
 }
 
 void GameMaps::populateEnemies(vector<std::vector<int>> &grid, vector<enemy> &enemies) {
+    logger->logInfo("Populating Enemies")->endLineInfo();
+    Json::Value enemies_(Json::arrayValue);
+    std::ifstream enemy_file(ENEMY_FILE);
+    enemy_file >> enemies_;
+    const int TOTAL_ENEMIES = enemies_.size();
+    int enemyLocations[TOTAL_ENEMIES][2];
+    cout<<"Number of enemies "<<TOTAL_ENEMIES<<endl;
+    for(int i=0; i < TOTAL_ENEMIES; ++i) {
+        enemyLocations[i][0] = enemies_.get(i, Json::Value("X"))["enemy"]
+                .get(Json::ArrayIndex(0), Json::Value("X")).asInt();
+        enemyLocations[i][1] = enemies_.get(i, Json::Value("X"))["enemy"]
+                .get(Json::ArrayIndex(1), Json::Value("X")).asInt();
+    }
+
+    int enemy_id = 1;
+    for(int i=0; i < TOTAL_ENEMIES; i++) {
+        enemies.emplace_back(grid,
+                             enemyLocations[i][0],
+                             enemyLocations[i][1],
+                             enemy_id);
+        enemy_id = enemy_id + 1 == PLAYER_ID ? enemy_id + 2 : enemy_id + 1;
+    }
+}
+
+RealWorld GameMaps::createRealWorld(vector<std::vector<int>> &grid) {
+    RealWorld rw;
+    rw.loadMap(grid);
+    return move(rw);
+}
+
+void GameMaps::serializeEnemies(vector<std::vector<int>> &grid, vector<enemy> &enemies) {
+    logger->logInfo("Serializing Enemies")->endLineInfo();
     auto rw = createRealWorld(grid);
     auto abG = createAbstractGraph(rw, grid);
     abG.createAbstractGraph();
@@ -67,10 +110,22 @@ void GameMaps::populateEnemies(vector<std::vector<int>> &grid, vector<enemy> &en
             enemy_id = enemy_id + 1 == PLAYER_ID ? enemy_id + 2 : enemy_id + 1;
         }
     }
-}
+    Json::Value allEnemies(Json::arrayValue);
+    for(int i = 0; i < enemies.size(); ++i)
+    {
+        Json::Value enemy_location;
+        Json::Value enemy_attributes(Json::arrayValue);
 
-RealWorld GameMaps::createRealWorld(vector<std::vector<int>> &grid) {
-    RealWorld rw;
-    rw.loadMap(grid);
-    return move(rw);
+        enemy_attributes.append(Json::Value(enemies[i].start_x));
+        enemy_attributes.append(Json::Value(enemies[i].start_y));
+
+        enemy_location["enemy"] = enemy_attributes;
+        allEnemies.append(enemy_location);
+    }
+    ofstream fileEnemies;
+    fileEnemies.open(ENEMY_FILE);
+    Json::StyledWriter styledWriter;
+    fileEnemies << styledWriter.write(allEnemies);
+    fileEnemies.close();
+
 }

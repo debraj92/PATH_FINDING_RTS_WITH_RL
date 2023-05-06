@@ -96,7 +96,7 @@ void PRAStar::initGoalState(int goalX, int goalY) {
     abstractGraph->setGoalColor(realWorld->getMapColors()[goalX][goalY]);
 }
 
-bool PRAStar::searchPathInRealWorldWithAstar(int parentGoal) {
+bool PRAStar::searchPathInRealWorldWithAstar(const int parentGoal) {
     /**
      * Generalizes the heuristic function with a common interface
      */
@@ -300,19 +300,19 @@ unique_ptr<RealWorld> &PRAStar::accessRealWorld() {
     return realWorld;
 }
 
-void PRAStar::printPathNodes(unique_ptr<unordered_map<node_, node_, node_::node_Hash>> &childParent, const node_ &root, const node_ &destination) {
-    auto current = childParent->find(root)->first;
+void PRAStar::printPathNodes(unique_ptr<unordered_map<node_, node_, node_::node_Hash>> &childParent, node_ &root, const node_ &destination) {
+
     int x, y;
-    x = current.x;
-    y = current.y;
-    cout<<"("<<x<<","<<y<<") ";
-    int count = 1;
-    while(current != destination) {
-        current = childParent->find(current)->second;
-        x = current.x;
-        y = current.y;
+    int count = 0;
+    while(root != destination) {
+        auto current = childParent->find(root);
+        auto this_node = current->first;
+        auto next_node = current->second;
+        x = this_node.x;
+        y = this_node.y;
         cout<<"("<<x<<","<<y<<") ";
         ++count;
+        root = next_node;
     }
     cout<<endl;
     cout<<"Total Nodes in Path "<<count<<endl;
@@ -380,7 +380,7 @@ int PRAStar::compareNodeOrders(const node_ &first, const node_ &second) {
     return pathRealWorld->find(first)->first.order - pathRealWorld->find(second)->first.order;
 }
 
-void PRAStar::orderNodeLinks(node_ &root, node_ &dest) {
+void PRAStar::orderNodeLinks(node_ root, node_ dest) {
     int order = 1;
     while(root != dest) {
         auto current = pathRealWorld->find(root);
@@ -394,7 +394,7 @@ void PRAStar::orderNodeLinks(node_ &root, node_ &dest) {
     }
 }
 
-void PRAStar::eraseDestinationNode(node_ &dest) {
+void PRAStar::eraseDestinationNode(node_ dest) {
     assert(pathRealWorld->find(dest) != pathRealWorld->end());
     pathRealWorld->erase(dest);
 }
@@ -479,6 +479,7 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop) {
         return false;
     }
     /// truncate for early stop. This is PRA* (4)
+    bool isBaselineActive = earlyStop;
     earlyStop = earlyStop && abstractGraph->getSolutionLength() > 4;
     int currentColor = abstractGraph->getStartColor();
     int goalColor = abstractGraph->getGoalColor();
@@ -497,6 +498,9 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop) {
     if(!earlyStop) {
         abstractParentNodeColors->insert(goalColor);
         intermediateParentGoal = -1;
+    }
+    if (isBaselineActive) {
+        abstractParentNodeColors->clear();
     }
     if (!searchPathInRealWorldWithAstar(intermediateParentGoal)) {
         return false;

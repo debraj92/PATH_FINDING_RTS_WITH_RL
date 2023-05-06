@@ -80,6 +80,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         previousActionError = actionError;
 
         fight(grid);
+        markDeadEnemies(enemiesInThisRound);
 
         // Enemy operations
         if (player1->life_left > 0 and not isDestinationReached()) {
@@ -318,6 +319,7 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
             if (e.current_x == player1->current_x && e.current_y == player1->current_y) {
                 logger->logDebug("Player killed at (")->logDebug(player1->current_x)->logDebug(",")->logDebug(player1->current_y)
                         ->logDebug(")")->endLineDebug();
+                logger->logDebug("Enemy that killed player ")->logDebug(e.id)->endLineDebug();
                 player1->takeDamage(e.getAttackPoints());
                 // enemy is also killed
                 e.takeDamage(e.getAttackPoints());

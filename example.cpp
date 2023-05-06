@@ -5,6 +5,7 @@
 #include "trainingMaps.h"
 #include <sys/resource.h>
 #include "GameController.h"
+#include "GameMaps.h"
 
 #include <chrono>
 
@@ -139,6 +140,71 @@ void generateMaps() {
 }
 
 
+void runOnGameMaps(player &player1) {
+
+    float countDestinationReach = 0;
+    float death = 0;
+    float max_ep = 1000;
+    int totalDamage = 0;
+    double totalPathRatio = 0;
+    int maxMemoryUsed = 0;
+
+    int sx=241;
+    int sy=50;
+    int dx=469;
+    int dy=452;
+    TestResult t{};
+    vector<vector<int>> grid;
+    player1.enableInfiniteLife();
+    for (int i=0; i<GRID_SPAN; i++) {
+        std::vector<int> row(GRID_SPAN, 0);
+        grid.push_back(row);
+    }
+    std::vector<enemy> enemies;
+    GameMaps gm;
+    gm.generateNextMap(grid);
+    gm.populateEnemies(grid, enemies);
+    player1.playGame(grid, enemies, sx, sy, dx, dy, t);
+
+    if(t.final_x == t.destination_x and t.final_y == t.destination_y) {
+        cout<<"Destination Reached"<<endl;
+    }
+
+    if(player1.life_left == 0) {
+        cout<<"Player dead "<<endl;
+    } else {
+        cout<<"Damage "<<t.damage<<endl;
+    }
+
+    cout<<"Path Ratio "<<t.pathRatio<<endl;
+
+    /*
+    if(t.final_x == t.destination_x and t.final_y == t.destination_y) {
+        countDestinationReach++;
+    }
+
+    if(player1.life_left == 0) {
+        death++;
+    }
+
+    totalDamage += t.damage;
+    totalPathRatio += t.pathRatio;
+    maxMemoryUsed += t.maxMemoryUsed;
+     */
+}
+
+void generateEnemiesForWarcraftMap() {
+    vector<vector<int>> grid;
+    for (int i=0; i<GRID_SPAN; i++) {
+        std::vector<int> row(GRID_SPAN, 0);
+        grid.push_back(row);
+    }
+    std::vector<enemy> enemies;
+    GameMaps gm;
+    gm.generateNextMap(grid);
+    gm.serializeEnemies(grid, enemies);
+}
+
 int main() {
 
     increaseStackSize();
@@ -149,20 +215,39 @@ int main() {
     //player player1(true);
     //player1.learnGame();
 
-
+    /*
     player player1(false);
     /// Enable baseline for comparison
-    //player1.enableBaseLinePlayer();
-    player1.enablePotentialFieldPlayer();
-    TestResult t{};
-    runTesting(player1);
+    player1.enableBaseLinePlayer();
 
-
+     ///TODO: PF Player logic needs to be checked with PRA*
+    //player1.enablePotentialFieldPlayer();
+    //runTesting(player1);
+    runOnGameMaps(player1);
+    */
     //generateMaps();
 
+    /// Enable to generate enemies for warcraft maps
+    //generateEnemiesForWarcraftMap();
+
+
     /// UI works only for training-maps1
-    //GameController control;
-    //control.startGame();
+
+    /**
+     * For Warcraft Maps,
+     * set GRID_SPAN = 28,
+     * set ABSTRACT_SECTOR_PRA_STAR = 7 or 4
+     * set useDefaultMap to false
+     *
+     * For Default Maps,
+     * set GRID_SPAN = 27
+     * set ABSTRACT_SECTOR_PRA_STAR = 9 or 3
+     * set useDefaultMap to true
+     *
+     */
+    GameController control;
+    //control.startGame(false);
+    control.startGame(true);
 
     return 0;
 }

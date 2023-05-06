@@ -85,8 +85,8 @@ Logger *Logger::endLineInfo() {
 
 void Logger::printBoard_(std::vector<std::vector<int>> &grid) {
     cout<<"print board"<<endl;
-    for (int row=0; row<grid.size(); row++) {
-        for (int col=0; col<grid[row].size(); col++) {
+    for (int row=0; row<GRID_SPAN; row++) {
+        for (int col=0; col<GRID_SPAN; col++) {
             cout<<grid[row][col];
             if(grid[row][col] <= -10) cout<<" ";
             else if (grid[row][col] >= 100) cout<<" ";
