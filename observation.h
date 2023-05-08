@@ -51,6 +51,8 @@ public:
     int actionInPreviousState;
     float isTrueLastActionLeftOrRight;
 
+    int distanceToDestination = 1000;
+
     /**
      * Assumption: Maximum 4 enemies within the vision radius are tracked
      */

@@ -52,7 +52,7 @@ void player::learnGame() {
 
             /// If resumed, then do not change enemy positions from last episode
             /// else reset enemy positions to start of game
-            prepareEnemiesHashMap(enemies);
+            prepareEnemiesHashMap(enemies, dest_x, dest_y);
         }
         game.player1->initialize(src_x, src_y, dest_x, dest_y);
 
@@ -111,7 +111,7 @@ void player::learnGame() {
 void player::playGame(vector<std::vector<int>> &gridSource, vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result) {
     copyGrid(gridSource);
     clearVisited();
-    prepareEnemiesHashMap(enemies);
+    prepareEnemiesHashMap(enemies, dest_x, dest_y);
     gameSimulation game(grid);
     game.player1 = this;
     logger->logDebug("Source (" + to_string(src_x) +", " + to_string(src_y) + ") Destination (" + to_string(dest_x) +", " + to_string(dest_y) +")\n")
@@ -510,9 +510,10 @@ void player::removeTemporaryObstacles() {
     }
 }
 
-void player::prepareEnemiesHashMap(vector<enemy> &enemies) {
+void player::prepareEnemiesHashMap(vector<enemy> &enemies, int agentDstX, int agentDstY) {
     hashMapEnemies.clear();
-    for(const enemy e: enemies) {
+    for(enemy e: enemies) {
+        e.setAgentDestination(agentDstX, agentDstY);
         hashMapEnemies.insert(std::make_pair(e.id, e));
     }
 }

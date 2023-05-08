@@ -14,7 +14,7 @@
  */
 const int MAX_EPISODES = 300000;   /// Must be greater than 8
 
-const int GRID_SPAN = 27;//512; /// >= 10 when running unit tests [7 for gameSimulation test]
+const int GRID_SPAN = 28;//512; /// >= 10 when running unit tests [7 for gameSimulation test]
 const int SESSION_TIMEOUT = GRID_SPAN * 5;
 
 const int MIN_EXPLORATION_BEFORE_TRAINING = 4;
@@ -122,7 +122,7 @@ const int PLAYER_ID = 9;
 
 const int MAX_CHANNELS_CNN = 3; // obstacle, enemies, path
 
-const double Q_REROUTE_THRESHOLD = -22;
+const double Q_REROUTE_THRESHOLD = -10;//-9.8;//-29;//-24;//-22;
 
 const int NEXT_Q_TOO_LOW_ERROR = -99999;
 
@@ -139,14 +139,14 @@ const int ABSTRACT_SECTOR_SIZE = 9; /// must be integer
 const int TILE_SCALE = 32;
 const int LENGTH_UI_FRAME = TILE_SCALE * GRID_SPAN;
 
-const int MAX_VISITED_FOR_STUCK = 5;
+const int MAX_VISITED_FOR_STUCK = 3;//5;
 
-const double POTENTIAL_FIELD_ATTRACTION_C = 5000;
-const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 200; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
+const double POTENTIAL_FIELD_ATTRACTION_C = 10 * GRID_SPAN;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 300; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
 const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 20;
 const int MAX_POTENTIAL_TRAIL_SIZE = 5;
 
-const int ABSTRACT_SECTOR_PRA_STAR = 9;//16;
+const int ABSTRACT_SECTOR_PRA_STAR = 7;//16;
 
 namespace RTS {
     enum LOG_LEVEL {

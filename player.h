@@ -166,7 +166,7 @@ public:
 
     void removeTemporaryObstacles();
 
-    void prepareEnemiesHashMap(std::vector<enemy>& enemies);
+    void prepareEnemiesHashMap(std::vector<enemy>& enemies, int agentDstX, int agentDstY);
 
     int markVisited();
 
