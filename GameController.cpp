@@ -3,7 +3,6 @@
 //
 
 #include "GameController.h"
-#include "GameMaps.h"
 #include <thread>
 
 
@@ -17,22 +16,26 @@ void GameController::startGame(bool useDefaultMap) {
     player1.registerUIComponent(uiView);
     std::vector<enemy> enemies;
     vector<vector<int>> grid;
+    vector<GameMaps::src_dst_data> startEnds;
+    GameMaps gm;
     if (!useDefaultMap) {
         for (int i=0; i<GRID_SPAN; i++) {
             std::vector<int> row(GRID_SPAN, 0);
             grid.push_back(row);
         }
-        GameMaps gm;
         gm.generateNextMap(grid);
-        gm.populateEnemies(grid, enemies);
+        gm.populateSourceDestinations(startEnds);
         uiView.initGameMap(grid);
     }
-    thread gamePlayRunner([this, &player1, &useDefaultMap, &grid, &enemies]{
+    thread gamePlayRunner([this, &player1, &useDefaultMap, &grid, &enemies, &startEnds, &gm]{
         while(not isGameStopped) {
             if (useDefaultMap) {
                 playGameAsynchronous(player1);
             } else {
-                playGameAsyncOnWarcraftMap(player1, grid, enemies);
+                auto dataSrcDst = gm.generateNextSourceAndDestination(startEnds);
+                enemies.clear();
+                gm.populateEnemies(grid, enemies);
+                playGameAsyncOnWarcraftMap(player1, grid, enemies, dataSrcDst);
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
@@ -60,16 +63,8 @@ void GameController::playGameAsynchronous(player &player1) {
 
 }
 
-void GameController::playGameAsyncOnWarcraftMap(player &player1, vector<std::vector<int>> &grid, std::vector<enemy> &enemies) {
-    int sx=26;
-    int sy=2;
-    int dx=5;
-    int dy=23;
-
-    //int dx=14;
-    //int dy=24;
-
+void GameController::playGameAsyncOnWarcraftMap(player &player1, vector<std::vector<int>> &grid, std::vector<enemy> &enemies,
+                                                GameMaps::src_dst_data &data) {
     TestResult t{};
-
-    player1.playGame(grid, enemies, sx, sy, dx, dy, t);
+    player1.playGame(grid, enemies, data.startX, data.startY, data.endX, data.endY, t);
 }

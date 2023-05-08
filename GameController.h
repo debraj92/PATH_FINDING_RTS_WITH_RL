@@ -10,6 +10,7 @@
 #include "player.h"
 #include "trainingMaps.h"
 #include <vector>
+#include "GameMaps.h"
 
 using namespace std;
 
@@ -21,7 +22,8 @@ class GameController {
 
    void playGameAsynchronous(player &player1);
 
-    void playGameAsyncOnWarcraftMap(player &player1, vector<std::vector<int>> &grid, std::vector<enemy> &enemies);
+    void playGameAsyncOnWarcraftMap(player &player1, vector<std::vector<int>> &grid, std::vector<enemy> &enemies,
+                                    GameMaps::src_dst_data &startEnd);
 
 public:
 

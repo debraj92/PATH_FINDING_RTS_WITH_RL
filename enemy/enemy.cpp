@@ -57,7 +57,8 @@ bool enemy::doNextMove(const int time, vector<std::vector<int>> &grid, enemy::pl
             return false;
         }
         fp->getNextPositionAfterGivenLocation(temp_current_x, temp_current_y, temp_current_x, temp_current_y);
-        if((not isTrainingInProgress) and calculateDistance(temp_current_x, temp_current_y, start_x, start_y) > MAX_ENEMY_DISTANCE_FOR_PURSUIT) {
+        if((not isTrainingInProgress) and (calculateDistance(temp_current_x, temp_current_y, start_x, start_y) > MAX_ENEMY_DISTANCE_FOR_PURSUIT or
+                (temp_current_x == agent_DestinationX && temp_current_y == agent_DestinationY))) {
             // forfeit pursuit. Wait for unit to come closer.
             // not important for RL strategies
             return false;
@@ -227,4 +228,9 @@ void enemy::updateUIParams(int nextX, int nextY) {
     } else {
         hasChangedOrientation = false;
     }
+}
+
+void enemy::setAgentDestination(int x, int y) {
+    agent_DestinationX = x;
+    agent_DestinationY = y;
 }

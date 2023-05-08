@@ -540,6 +540,8 @@ void observation::findDestination(bool isTraining) {
             }
         }
     }
+
+    distanceToDestination = getShortestDistanceBetweenPoints(playerX, playerY, destinationX, destinationY);
 }
 
 void observation::printRelativeTrajectory() {
