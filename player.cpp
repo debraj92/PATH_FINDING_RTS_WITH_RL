@@ -143,7 +143,9 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(not isSimplePlayerStuckDontReroute) {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+                }
             }
         } else {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
@@ -174,7 +176,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
 
         // Is stuck, re-route. If stuck for long (RLPlayerStuckTimer), behave like baseline A*
-        if (isRLPlayerStuck and not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+        if (isRLPlayerStuck and not findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
         }
 
         ob.locateTrajectoryAndDirection(fp);

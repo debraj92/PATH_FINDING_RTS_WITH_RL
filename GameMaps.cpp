@@ -8,6 +8,7 @@
 #include "dist/json/json.h"
 #include <iostream>
 #include <fstream>
+#include <random>
 
 using namespace std;
 
@@ -61,7 +62,7 @@ void GameMaps::generateNextMap(vector<std::vector<int>> &grid) {
 }
 
 AbstractGraph GameMaps::createAbstractGraph(RealWorld &rw, vector<std::vector<int>> &grid) {
-    return move(AbstractGraph(rw, 4));
+    return move(AbstractGraph(rw, 5));
 }
 
 void GameMaps::populateEnemies(vector<std::vector<int>> &grid, vector<enemy> &enemies) {
@@ -128,4 +129,193 @@ void GameMaps::serializeEnemies(vector<std::vector<int>> &grid, vector<enemy> &e
     fileEnemies << styledWriter.write(allEnemies);
     fileEnemies.close();
 
+}
+
+void GameMaps::serializeStartAndEndPoints() {
+    logger->logInfo("serializeStartAndEndPoints")->endLineInfo();
+    vector<vector<int>> grid;
+    for (int i=0; i<GRID_SPAN; i++) {
+        std::vector<int> row(GRID_SPAN, 0);
+        grid.push_back(row);
+    }
+    std::vector<enemy> enemies;
+
+    generateNextMap(grid);
+    populateEnemies(grid, enemies);
+
+    logger->logInfo("Generating Abstract Graph ")->endLineInfo();
+    RealWorld rw;
+    rw.loadMap(grid);
+    auto ab = AbstractGraph(rw, 8);
+    ab.createAbstractGraph();
+    auto allAbstractNodes = ab.getAllAbstractNodes();
+    std::random_device rd;
+    auto rng = std::default_random_engine { rd() };
+    std::shuffle(std::begin(allAbstractNodes), std::end(allAbstractNodes), rng);
+    findPath fp(grid);
+    logger->logInfo("Reading enemies ")->endLineInfo();
+    populateEnemiesOnRealMaps(rw, enemies);
+    logger->logInfo("Starting to generate start and end coordinates ")->endLineInfo();
+    for(const auto& node: allAbstractNodes) {
+        set<int> visitedForAbstractDfs;
+        if (collection.size() > MAX_DATA) {
+            break;
+        }
+        auto centroid = node.centroidRealNode;
+        int x = centroid.first;
+        int y = centroid.second;
+        auto color = node.color;
+        int sourceX, sourceY;
+        set<int> visitedForRwDfs;
+        if (dfsToFindFreeRealCoordinateInAbstractRegion(&sourceX, &sourceY, x, y, color, rw, createRank(x, y), visitedForRwDfs)) {
+            assert(grid[sourceX][sourceY] == 0);
+            dfsToFindDestination(grid, node, ab, fp, rw, sourceX, sourceY, visitedForAbstractDfs);
+        }
+    }
+
+    logger->logInfo("Saving to file ")->endLineInfo();
+    ofstream fileSrcDst;
+    fileSrcDst.open(SRC_DST_FILE);
+    for(auto &data: collection) {
+        fileSrcDst << data.startX << "," << data.startY << "," << data.endX << "," << data.endY << "," << data.pathLength << endl;
+    }
+    fileSrcDst.close();
+}
+
+void GameMaps::dfsToFindDestination(vector<vector<int>> &grid, const AbstractNode &abNode, AbstractGraph &abGraph, findPath &fp, RealWorld &rw,
+                                    const int startX, const int startY, set<int> &visited) {
+    if (visited.count(abNode.color) || visited.size() > MAX_VISIT_FOR_ABSTRACT_DFS_DATA_COLLECTION) {
+        return;
+    }
+    auto centroid = abNode.centroidRealNode;
+    int x = centroid.first;
+    int y = centroid.second;
+    auto color = abNode.color;
+    visited.insert(color);
+    int destX, destY;
+    set<int> visitedForRwDfs;
+    if (dfsToFindFreeRealCoordinateInAbstractRegion(&destX, &destY, x, y, color, rw, createRank(x, y), visitedForRwDfs)) {
+        auto shortestLen = computeEuclideanDistance(startX, startY, destX, destY);
+        if (shortestLen >= MIN_LENGTH_PATH_IN_DATA && bins[(int)floor(shortestLen / MIN_LENGTH_PATH_IN_DATA) - 1] < MAX_BIN_SIZE) {
+            if(destX == 21 && destY == 25) {
+                logger->printBoardInfo(grid)->endLineInfo();
+            }
+            assert(grid[destX][destY] == 0);
+            fp.changeSourceAndDestination(startX, startY, destX, destY);
+            fp.findPathToDestination();
+            src_dst_data data(startX, startY, destX, destY, fp.getCountOfNodesToDestination());
+            string log = "[" + std::to_string(startX) + ", " + std::to_string(startY) + "]";
+            log += "-> [" + std::to_string(destX) + ", " + std::to_string(destY) + "] ";
+            log += "L " + std::to_string(fp.getCountOfNodesToDestination());
+            logger->logInfo(log)->endLineInfo();
+            collection.emplace_back(data);
+            ++bins[(int)floor(shortestLen / MIN_LENGTH_PATH_IN_DATA) - 1];
+        }
+    }
+    for(int adjacentNodeColor : abNode.reachableNodes) {
+        auto nextNode = abGraph.unrank(adjacentNodeColor);
+        dfsToFindDestination(grid, nextNode, abGraph, fp, rw, startX, startY,  visited);
+    }
+}
+
+bool GameMaps::dfsToFindFreeRealCoordinateInAbstractRegion(int *result_x, int *result_y, int current_x, int current_y, const int color, RealWorld &rw, int rank, set<int> &visited) {
+    if (visited.count(rank) > 0) {
+        return false;
+    }
+    if (rw.getMapColors()[current_x][current_y] != color) {
+        return false;
+    }
+    if (rw.getRealMap()[current_x][current_y] == 0) {
+        *result_x = current_x;
+        *result_y = current_y;
+        return true;
+    }
+    visited.insert(rank);
+
+    if( current_x > 0 ) {
+        if (current_y > 0 &&
+            dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x - 1, current_y - 1, color, rw,
+                                                        createRank(current_x - 1, current_y - 1), visited)) {
+            return true;
+        }
+        if (current_y < GRID_SPAN - 1 &&
+            dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x - 1, current_y + 1, color, rw,
+                                                        createRank(current_x - 1, current_y + 1), visited)) {
+            return true;
+        }
+        if (dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x - 1, current_y, color, rw,
+                                                        createRank(current_x - 1, current_y), visited)) {
+            return true;
+        }
+    }
+    if( current_x < GRID_SPAN - 1 ) {
+        if (current_y > 0 &&
+            dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x + 1, current_y - 1, color, rw,
+                                                        createRank(current_x + 1, current_y - 1), visited)) {
+            return true;
+        }
+        if (current_y < GRID_SPAN - 1 &&
+            dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x + 1, current_y + 1, color, rw,
+                                                        createRank(current_x + 1, current_y + 1), visited)) {
+            return true;
+        }
+        if (dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x + 1, current_y, color, rw,
+                                                        createRank(current_x + 1, current_y), visited)) {
+            return true;
+        }
+    }
+    if (current_y > 0 &&
+        dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x, current_y - 1, color, rw,
+                                                    createRank(current_x, current_y - 1), visited)) {
+        return true;
+    }
+    if (current_y < GRID_SPAN - 1 &&
+        dfsToFindFreeRealCoordinateInAbstractRegion(result_x, result_y, current_x, current_y + 1, color, rw,
+                                                    createRank(current_x, current_y + 1), visited)) {
+        return true;
+    }
+    return false;
+}
+
+int GameMaps::createRank(int x, int y) {
+    return x * 1000 + y;
+}
+
+int GameMaps::computeEuclideanDistance(int x1, int y1, int x2, int y2) {
+    return (int) round(sqrtf(powf(x1 - x2, 2) + powf(y1 - y2, 2)));
+}
+
+void GameMaps::populateEnemiesOnRealMaps(RealWorld &rw, std::vector<enemy> &enemies) {
+    for(const enemy &e : enemies) {
+        rw.getRealMap()[e.current_x][e.current_y] = e.id;
+    }
+}
+
+void GameMaps::populateSourceDestinations(vector<GameMaps::src_dst_data>& srcDstCollection) {
+    logger->logInfo("Populating Source and Destinations")->endLineInfo();
+    std::ifstream src_dst_file(SRC_DST_FILE);
+    std::string line;
+    while (std::getline(src_dst_file, line))
+    {
+        auto tokens = split(line);
+        GameMaps::src_dst_data data(tokens);
+        srcDstCollection.emplace_back(data);
+    }
+    srcDst_iterator = 0;
+}
+
+vector<int> GameMaps::split(string s) {
+    vector<int> tokens;
+    stringstream ss(s);
+    string token;
+    while (std::getline(ss, token, ',')) {
+        tokens.push_back(std::stoi(token));
+    }
+    return std::move(tokens);
+}
+
+GameMaps::src_dst_data GameMaps::generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection) {
+    int pointer = srcDst_iterator;
+    srcDst_iterator = (srcDst_iterator + 1) % srcDstCollection.size();
+    return srcDstCollection[pointer];
 }

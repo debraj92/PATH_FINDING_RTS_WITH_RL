@@ -122,7 +122,7 @@ const int PLAYER_ID = 9;
 
 const int MAX_CHANNELS_CNN = 3; // obstacle, enemies, path
 
-const double Q_REROUTE_THRESHOLD = -10;//-9.8;//-29;//-24;//-22;
+const double Q_REROUTE_THRESHOLD = -22;
 
 const int NEXT_Q_TOO_LOW_ERROR = -99999;
 

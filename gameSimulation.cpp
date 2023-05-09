@@ -17,7 +17,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
     player1->countPathLengthToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
     populateEnemies(grid, false);
     if (not player1->isSimpleAstarPlayer and not player1->isPotentialFieldPlayer) {
-        bool isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+        bool isPathFound = player1->findPathToDestinationWithNoEnemies(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
         if (not isPathFound) {
             logger->logInfo("No path found, ignoring navigation")->endLineInfo();
             return;
@@ -126,7 +126,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
 
         if (not player1->isSimpleAstarPlayer and not player1->isPotentialFieldPlayer and (nextObservation.trajectory_off_track or nextObservation.destination_distance < 5)) {
             // if unit is off-track, re-route and rescue unit.
-            isPathFound = player1->findPathToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+            isPathFound = player1->findPathToDestinationWithNoEnemies(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
             if (not isPathFound) {
                 logger->logInfo("No path found, ignoring navigation")->endLineInfo();
                 return;
