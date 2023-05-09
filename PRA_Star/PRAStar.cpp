@@ -110,8 +110,9 @@ bool PRAStar::searchPathInRealWorldWithAstar(const int parentGoal) {
     realWorld->getStart(startX, startY);
     /// Starting point should be passable coordinate. Or non-obstacle.
     if (realWorld->getRealMap()[startX][startY] != 0 && realWorld->getRealMap()[startX][startY] != PLAYER_ID) {
-        cout<<realWorld->getRealMap()[startX][startY]<<endl;
         logger->logInfo("Starting point should be passable (non-obstacle) coordinate.")->endLineInfo();
+        logger->logInfo("Starting point is: ")->logInfo(realWorld->getRealMap()[startX][startY])->endLineInfo();
+        logger->printBoardInfo(realWorld->getRealMap())->endLineInfo();
         return false;
     }
     auto root = realWorld->createNode(startX, startY);

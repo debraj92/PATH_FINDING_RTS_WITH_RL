@@ -15,6 +15,7 @@ using std::chrono::milliseconds;
 void gameSimulation::play(vector<std::vector<int>> &grid) {
     logger->logDebug("gameSimulation::play")->endLineDebug();
     player1->countPathLengthToDestination(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
+    grid[player1->current_x][player1->current_y] = 9;
     populateEnemies(grid, false);
     if (not player1->isSimpleAstarPlayer and not player1->isPotentialFieldPlayer) {
         bool isPathFound = player1->findPathToDestinationWithNoEnemies(player1->current_x, player1->current_y, player1->destination_x, player1->destination_y);
@@ -23,7 +24,6 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
             return;
         }
     }
-    grid[player1->current_x][player1->current_y] = 9;
     logger->printBoardDebug(grid);
     player1->timeStep = 1;
     int action = ACTION_STRAIGHT;
@@ -96,6 +96,9 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         player1->publishOnUI(enemiesInThisRound);
         ++player1->timeStep;
 
+        if (player1->life_left <= 0) {
+            break;
+        }
         // Recover from bad stuck state if possible
         if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
             if (player1->isSimpleAstarPlayer) {
@@ -244,7 +247,6 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
             // this action will be ignored
             return -1;
         }
-
     }
 
     switch(nextAction) {

@@ -147,6 +147,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
                     logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
                 }
             }
+
         } else {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
                 logger->logDebug("Player will use no enemies path")->endLineDebug();
@@ -407,8 +408,8 @@ void player::populateEnemyObstacles(vector<std::vector<int>> &gridTemp, bool don
 
     for(int i = current_x - ENEMY_VISION_RADIUS; i <= current_x + ENEMY_VISION_RADIUS; i++) {
         for(int j = current_y - ENEMY_VISION_RADIUS; j <= current_y + ENEMY_VISION_RADIUS; j++) {
-            if(i >= 0 and i < GRID_SPAN and j >= 0 and j < GRID_SPAN and grid[i][j] != PLAYER_ID and grid[i][j] > 0) {
-                const auto &e = hashMapEnemies.find(grid[i][j])->second;
+            if(i >= 0 and i < GRID_SPAN and j >= 0 and j < GRID_SPAN and gridTemp[i][j] != PLAYER_ID and gridTemp[i][j] > 0) {
+                const auto &e = hashMapEnemies.find(gridTemp[i][j])->second;
                 if (dontGoClose) {
                     // surround enemy with obstacles
                     for(int x = e.current_x - 1; x <= e.current_x + 1; x++) {
