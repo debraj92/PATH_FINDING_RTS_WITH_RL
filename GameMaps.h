@@ -102,6 +102,8 @@ public:
     src_dst_data generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection);
 
     void serializeStartAndEndPoints();
+
+    bool areEnemiesNearby(RealWorld &rw, int x, int y);
 };
 
 

@@ -225,7 +225,7 @@ bool GameMaps::dfsToFindFreeRealCoordinateInAbstractRegion(int *result_x, int *r
     if (rw.getMapColors()[current_x][current_y] != color) {
         return false;
     }
-    if (rw.getRealMap()[current_x][current_y] == 0) {
+    if (rw.getRealMap()[current_x][current_y] == 0 and !areEnemiesNearby(rw, current_x, current_y)) {
         *result_x = current_x;
         *result_y = current_y;
         return true;
@@ -318,4 +318,19 @@ GameMaps::src_dst_data GameMaps::generateNextSourceAndDestination(vector<GameMap
     int pointer = srcDst_iterator;
     srcDst_iterator = (srcDst_iterator + 1) % srcDstCollection.size();
     return srcDstCollection[pointer];
+}
+
+bool GameMaps::areEnemiesNearby(RealWorld &rw, int x, int y) {
+    for(int i = x - 2; i <= x + 2; ++i) {
+        if (i < 0 or i >= GRID_SPAN) {
+            continue;
+        }
+        for(int j = y - 2; j <= y + 2; ++j) {
+            if (j < 0 or j >= GRID_SPAN) {
+                continue;
+            }
+            if(rw.getRealMap()[i][j] > 0) return true;
+        }
+    }
+    return false;
 }
