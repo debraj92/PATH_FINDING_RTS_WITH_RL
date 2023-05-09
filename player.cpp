@@ -143,9 +143,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(not isSimplePlayerStuckDontReroute) {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                    logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
-                }
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
             }
 
         } else {
@@ -161,7 +159,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(isPotentialFieldPlayerStuck) {
             // Behave like baseline A* player if stuck
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+            if (not findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
                 logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
                 isPotentialFieldPlayerStuck = false;
             }
