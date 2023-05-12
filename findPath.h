@@ -62,7 +62,7 @@ public:
     }
 
     bool findPathToDestination();
-    bool findPathToDestinationDeferred(bool earlyStop);
+    bool findPathToDestinationDeferred(bool earlyStop, bool useConstrainedAStar);
     void calculateNextPosition();
     void getNextPositionAfterGivenLocation(int &given_x, int &given_y, int &next_x, int &next_y);
     int getNext_x();

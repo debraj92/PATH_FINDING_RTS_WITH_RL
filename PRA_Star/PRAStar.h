@@ -124,7 +124,7 @@ public:
 
     bool findPathToDestination();
 
-    bool findPathToDestinationDeferred(bool earlyStop);
+    bool findPathToDestinationDeferred(bool earlyStop, bool useConstrainedAStar);
 
     node_ getNextNode(node_& current);
 

@@ -19,14 +19,14 @@ double PotentialFieldPlayerUtil::evaluateAttraction(int player_x, int player_y) 
 double PotentialFieldPlayerUtil::evaluateRepulsionFromEnemyAndTrail(int player_x, int player_y, int enemy_x, int enemy_y, int enemy_id) {
     logger->logDebug("Repulsion from enemy : ")->logDebug(enemy_id)->logDebug(" = ");
     double distanceToEnemy = sqrt(pow(player_x - enemy_x, 2) + pow(player_y - enemy_y, 2));
-    if (distanceToEnemy >= VISION_RADIUS) {
+    if (distanceToEnemy > VISION_RADIUS) {
         logger->logDebug(0)->endLineDebug();
         return 0;
     }
     double repulsion = 0;
 
     if (distanceToEnemy < 1) {
-        repulsion = (static_cast<double>(VISION_RADIUS - 1) / VISION_RADIUS) + 1;
+        repulsion = (static_cast<double>(VISION_RADIUS - 0.5) / VISION_RADIUS) + 1;
     } else {
         repulsion = (VISION_RADIUS - distanceToEnemy) / (distanceToEnemy * VISION_RADIUS);
 
@@ -117,113 +117,18 @@ void PotentialFieldPlayerUtil::evaluateSurroundingPotentialField(int player_x, i
 void PotentialFieldPlayerUtil::moveToLowestPotentialCell(int &player_x, int &player_y) {
 
     attractionNormalizingFactor = pow(player_x - destination_x, 2) + pow(player_y - destination_y, 2);
-    double maxAttractionPotential = 1000000;
     int selectedDirection = 0;
-    double attractionPotential;
 
-    if(lowestPotential == surroundingPotentialField[N]) {
-        maxAttractionPotential = evaluateAttraction(player_x - 1, player_y);
-        selectedDirection = N;
-    }
-
-    if(lowestPotential == surroundingPotentialField[NW]) {
-        attractionPotential = evaluateAttraction(player_x - 1, player_y - 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = NW;
+    // find the lowest potential
+    for(int i=N; i<=NE; ++i) {
+        if (lowestPotential == surroundingPotentialField[i]) {
+            selectedDirection = i;
+            break;
         }
     }
 
-    if(lowestPotential == surroundingPotentialField[W]) {
-        attractionPotential = evaluateAttraction(player_x, player_y - 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = W;
-        }
-    }
-
-    if(lowestPotential == surroundingPotentialField[SW]) {
-        attractionPotential = evaluateAttraction(player_x + 1, player_y - 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = SW;
-        }
-    }
-
-
-    if(lowestPotential == surroundingPotentialField[S]) {
-        attractionPotential = evaluateAttraction(player_x + 1, player_y);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = S;
-        }
-    }
-
-
-    if(lowestPotential == surroundingPotentialField[SE]) {
-        attractionPotential = evaluateAttraction(player_x + 1, player_y + 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = SE;
-        }
-    }
-
-
-    if(lowestPotential == surroundingPotentialField[E]) {
-        attractionPotential = evaluateAttraction(player_x, player_y + 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = E;
-        }
-    }
-
-    if(lowestPotential == surroundingPotentialField[NE]) {
-        attractionPotential = evaluateAttraction(player_x - 1, player_y + 1);
-        if (attractionPotential < maxAttractionPotential) {
-            maxAttractionPotential = attractionPotential;
-            selectedDirection = NE;
-        }
-    }
     addToPotentialTrail(player_x, player_y);
-
-    switch (selectedDirection) {
-        case N:
-            logger->logDebug("Selected Direction : N")->endLineDebug();
-            --player_x;
-            break;
-        case NW:
-            logger->logDebug("Selected Direction : NW")->endLineDebug();
-            --player_x;
-            --player_y;
-            break;
-        case W:
-            logger->logDebug("Selected Direction : W")->endLineDebug();
-            --player_y;
-            break;
-        case SW:
-            logger->logDebug("Selected Direction : SW")->endLineDebug();
-            ++player_x;
-            --player_y;
-            break;
-        case S:
-            logger->logDebug("Selected Direction : S")->endLineDebug();
-            ++player_x;
-            break;
-        case SE:
-            logger->logDebug("Selected Direction : SE")->endLineDebug();
-            ++player_x;
-            ++player_y;
-            break;
-        case E:
-            logger->logDebug("Selected Direction : E")->endLineDebug();
-            ++player_y;
-            break;
-        case NE:
-            logger->logDebug("Selected Direction : NE")->endLineDebug();
-            --player_x;
-            ++player_y;
-            break;
-    }
+    updateCoordinateUsingDirection(player_x, player_y, selectedDirection);
 }
 
 void PotentialFieldPlayerUtil::setDestination(int dest_x, int dest_y) {
@@ -236,6 +141,39 @@ void PotentialFieldPlayerUtil::addToPotentialTrail(int x, int y) {
         potentialTrail.pop_front();
     }
     potentialTrail.emplace_back(x, y);
+}
+
+void PotentialFieldPlayerUtil::updateCoordinateUsingDirection(int &x, int &y, int direction) {
+    switch(direction) {
+        case N:
+            --x;
+            break;
+        case NW:
+            --x;
+            --y;
+            break;
+        case W:
+            --y;
+            break;
+        case SW:
+            ++x;
+            --y;
+            break;
+        case S:
+            ++x;
+            break;
+        case SE:
+            ++x;
+            ++y;
+            break;
+        case E:
+            ++y;
+            break;
+        case NE:
+            --x;
+            ++y;
+            break;
+    }
 }
 
 

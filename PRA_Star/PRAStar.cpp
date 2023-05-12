@@ -163,6 +163,7 @@ bool PRAStar::searchPathInRealWorldWithAstar(const int parentGoal) {
             } else {
                 realWorld->setPathLength(solutionLength);
             }
+            maxSizeOfOpenList = openList.getMaxSize() > maxSizeOfOpenList ? openList.getMaxSize() : maxSizeOfOpenList;
             break;
         }
 
@@ -183,7 +184,7 @@ bool PRAStar::searchPathInRealWorldWithAstar(const int parentGoal) {
     if (!isPathFound) {
         logger->logDebug("Path Not Found")->endLineDebug();
     }
-
+    maxSizeOfOpenList = openList.getMaxSize() > maxSizeOfOpenList ? openList.getMaxSize() : maxSizeOfOpenList;
     return isPathFound;
 }
 
@@ -472,7 +473,7 @@ int PRAStar::getMaxMemoryUsed() {
     return maxSizeOfOpenList;
 }
 
-bool PRAStar::findPathToDestinationDeferred(bool earlyStop) {
+bool PRAStar::findPathToDestinationDeferred(bool earlyStop, bool useConstrainedAStar) {
     assert(initialized);
 
     realWorld->setPathLength(0);
@@ -481,7 +482,6 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop) {
         return false;
     }
     /// truncate for early stop. This is PRA* (4)
-    bool isBaselineActive = earlyStop;
     earlyStop = earlyStop && abstractGraph->getSolutionLength() > 4;
     int currentColor = abstractGraph->getStartColor();
     int goalColor = abstractGraph->getGoalColor();
@@ -501,7 +501,7 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop) {
         abstractParentNodeColors->insert(goalColor);
         intermediateParentGoal = -1;
     }
-    if (isBaselineActive) {
+    if (!useConstrainedAStar) {
         abstractParentNodeColors->clear();
     }
     if (!searchPathInRealWorldWithAstar(intermediateParentGoal)) {

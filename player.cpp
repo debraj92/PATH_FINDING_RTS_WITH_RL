@@ -17,11 +17,16 @@ using namespace std;
 
 void player::takeDamage(int points) {
     if(infiniteLife) {
-        damage++;
+        if(not hasTakenDamageInThisRound) {
+            damage++;
+            hasTakenDamageInThisRound = true;
+        }
         return;
     }
     if (life_left > 0) life_left -= points;
 }
+
+
 
 void player::learnGame() {
     vector<enemy> enemies;
@@ -126,6 +131,7 @@ void player::playGame(vector<std::vector<int>> &gridSource, vector<enemy> &enemi
     result.damage = game.player1->damage;
     result.pathRatio = (double)game.player1->distanceTravelled / (double)game.player1->pathLength;
     result.maxMemoryUsed = game.player1->maxMemoryUsed;
+    result.reached = (result.final_x == game.player1->destination_x) and (result.final_y == game.player1->destination_y);
     game.removeCharacters(grid);
     logger->logDebug("Total rewards collected ")->logDebug(game.getTotalRewardsCollected())->endLineDebug();
 }
@@ -159,15 +165,17 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(isPotentialFieldPlayerStuck) {
             // Behave like baseline A* player if stuck
-            if (not findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
-                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
-                isPotentialFieldPlayerStuck = false;
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
+                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                    logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+                }
             }
             ob.locateTrajectoryAndDirection(fp);
             ob.locateRelativeTrajectory();
         } else {
             pfUtil.evaluateSurroundingPotentialField(current_x, current_y, hashMapEnemies, grid);
         }
+
     }
 
     ob.findDestination(isTrainingMode and not stopLearning);
@@ -210,7 +218,7 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
     populateEnemyObstacles(gridTemporary, dontGoCloseToEnemies);
     fp->changeMap(gridTemporary);
     fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred(isSimpleAstarPlayer);
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -220,7 +228,7 @@ bool player::findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x,
     logger->logDebug("findPathToDestination")->endLineDebug();
     fp->changeMap(grid);
     fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred(isSimpleAstarPlayer);
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -562,6 +570,10 @@ void player::moveWithPotentialField() {
 
 bool player::isInfiniteLife() {
     return infiniteLife;
+}
+
+void player::resetDamageInThisRound() {
+    hasTakenDamageInThisRound = false;
 }
 
 

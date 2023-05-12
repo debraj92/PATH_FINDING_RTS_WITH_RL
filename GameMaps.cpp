@@ -128,7 +128,7 @@ void GameMaps::serializeEnemies(vector<std::vector<int>> &grid, vector<enemy> &e
     Json::StyledWriter styledWriter;
     fileEnemies << styledWriter.write(allEnemies);
     fileEnemies.close();
-
+    logger->logInfo("Done")->endLineInfo();
 }
 
 void GameMaps::serializeStartAndEndPoints() {
@@ -180,6 +180,7 @@ void GameMaps::serializeStartAndEndPoints() {
         fileSrcDst << data.startX << "," << data.startY << "," << data.endX << "," << data.endY << "," << data.pathLength << endl;
     }
     fileSrcDst.close();
+    logger->logInfo("Done")->endLineInfo();
 }
 
 void GameMaps::dfsToFindDestination(vector<vector<int>> &grid, const AbstractNode &abNode, AbstractGraph &abGraph, findPath &fp, RealWorld &rw,
@@ -295,11 +296,13 @@ void GameMaps::populateSourceDestinations(vector<GameMaps::src_dst_data>& srcDst
     logger->logInfo("Populating Source and Destinations")->endLineInfo();
     std::ifstream src_dst_file(SRC_DST_FILE);
     std::string line;
+    len_srcDst = 0;
     while (std::getline(src_dst_file, line))
     {
         auto tokens = split(line);
         GameMaps::src_dst_data data(tokens);
         srcDstCollection.emplace_back(data);
+        ++len_srcDst;
     }
     srcDst_iterator = 0;
 }
@@ -333,4 +336,8 @@ bool GameMaps::areEnemiesNearby(RealWorld &rw, int x, int y) {
         }
     }
     return false;
+}
+
+bool GameMaps::isEndOfSrcDst() {
+    return srcDst_iterator >= len_srcDst;
 }

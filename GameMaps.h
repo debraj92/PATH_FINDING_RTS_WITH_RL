@@ -28,20 +28,24 @@ class GameMaps {
      */
     vector<int> bins;
 
-    //const string MAP_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-map/duskwood.map";
-    //const string ENEMY_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-enemies/duskwood.json";
+    const string MAP_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-map/blastedlands.map";
+    const string ENEMY_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-enemies/blastedlands.json";
+    const string SRC_DST_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-src_dst/blastedlands.csv";
 
     /// Enables when running on UI
+    /*
     const string MAP_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_game.map";
     const string ENEMY_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_enemy.json";
     const string SRC_DST_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_src_dst.json";
+    */
 
-    const int MAX_VISIT_FOR_ABSTRACT_DFS_DATA_COLLECTION = 10;
-    const int MAX_BIN_SIZE = 100;
-    const int MAX_DATA = 1000;
-    const int MIN_LENGTH_PATH_IN_DATA = 10;
+    const int MAX_VISIT_FOR_ABSTRACT_DFS_DATA_COLLECTION = 400;
+    const int MAX_BIN_SIZE = 200;
+    const int MAX_DATA = 2000;
+    const int MIN_LENGTH_PATH_IN_DATA = 50;
 
     int srcDst_iterator = -1;
+    int len_srcDst;
 
     std::unique_ptr<Logger> logger;
 
@@ -104,6 +108,8 @@ public:
     void serializeStartAndEndPoints();
 
     bool areEnemiesNearby(RealWorld &rw, int x, int y);
+
+    bool isEndOfSrcDst();
 };
 
 

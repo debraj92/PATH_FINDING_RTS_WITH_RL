@@ -18,9 +18,9 @@ bool findPath::findPathToDestination() {
     return pathFound;
 }
 
-bool findPath::findPathToDestinationDeferred(bool earlyStop) {
+bool findPath::findPathToDestinationDeferred(bool earlyStop, bool useConstrainedAStar) {
     logger->logDebug("findPath::findPathToDestinationDeferred")->endLineDebug();
-    bool pathFound = aStar.findPathToDestinationDeferred(earlyStop);
+    bool pathFound = aStar.findPathToDestinationDeferred(earlyStop, useConstrainedAStar);
     visited_x_onpath = -1;
     visited_y_onpath = -1;
     return pathFound;

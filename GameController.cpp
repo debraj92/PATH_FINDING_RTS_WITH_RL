@@ -17,6 +17,7 @@ void GameController::startGame(bool useDefaultMap) {
     std::vector<enemy> enemies;
     vector<vector<int>> grid;
     vector<GameMaps::src_dst_data> startEnds;
+    std::vector<enemy> enemiesOriginal;
     GameMaps gm;
     if (!useDefaultMap) {
         for (int i=0; i<GRID_SPAN; i++) {
@@ -25,16 +26,17 @@ void GameController::startGame(bool useDefaultMap) {
         }
         gm.generateNextMap(grid);
         gm.populateSourceDestinations(startEnds);
+        gm.populateEnemies(grid, enemiesOriginal);
         uiView.initGameMap(grid);
     }
-    thread gamePlayRunner([this, &player1, &useDefaultMap, &grid, &enemies, &startEnds, &gm]{
+    thread gamePlayRunner([this, &player1, &useDefaultMap, &grid, &enemies, &startEnds, &gm, &enemiesOriginal]{
         while(not isGameStopped) {
             if (useDefaultMap) {
                 playGameAsynchronous(player1);
             } else {
                 auto dataSrcDst = gm.generateNextSourceAndDestination(startEnds);
                 enemies.clear();
-                gm.populateEnemies(grid, enemies);
+                std::copy(enemiesOriginal.begin(), enemiesOriginal.end(), back_inserter(enemies));
                 playGameAsyncOnWarcraftMap(player1, grid, enemies, dataSrcDst);
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));

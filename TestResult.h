@@ -16,6 +16,9 @@ public:
     int damage;
     double pathRatio;
     int maxMemoryUsed;
+    bool reached;
+    double executionTime;
+    int pathLength;
 };
 
 #endif //EXAMPLE_TESTS_TESTRESULT_H

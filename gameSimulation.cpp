@@ -43,6 +43,7 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
         logger->logDebug("player (" + to_string(player1->current_x) + ", "+to_string(player1->current_y)+")")->endLineDebug();
         // Next Action
         actionError = 0;
+        player1->resetDamageInThisRound();
         action = movePlayer(grid, currentObservation, &actionError);
         bool isPathFound;
         if (actionError == NEXT_Q_TOO_LOW_ERROR) {
@@ -100,13 +101,16 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
             break;
         }
         // Recover from bad stuck state if possible
-        if(player1->markVisited() >= MAX_VISITED_FOR_STUCK /*or isStuckAtBorder()*/) {
+        auto visited = player1->markVisited();
+        if(visited >= MAX_VISITED_FOR_STUCK) {
             if (player1->isSimpleAstarPlayer) {
                 //logger->logInfo("Baseline Player stuck")->endLineInfo();
                 player1->isSimplePlayerStuckDontReroute = true;
             } else if (player1->isPotentialFieldPlayer) {
-                //logger->logInfo("PF Player stuck")->endLineInfo();
-                player1->isPotentialFieldPlayerStuck = true;
+                if (visited >= MAX_VISITED_FOR_STUCK_FOR_PF) {
+                    //logger->logInfo("PF Player stuck")->endLineInfo();
+                    player1->isPotentialFieldPlayerStuck = true;
+                }
             } else {
                 //logger->logInfo("RL Player stuck, will re-route")->endLineInfo();
                 player1->isRLPlayerStuck = true;
@@ -233,7 +237,7 @@ int gameSimulation::movePlayer(vector<vector<int>> &grid, const observation &cur
             // move in the direction from high to low potential
             nextAction = -1;
             player1->moveWithPotentialField();
-        }
+        };
     } else {
         if(player1->RLPlayerStuckTimer >= MAX_VISITED_FOR_STUCK) {
             nextAction = ACTION_STRAIGHT;

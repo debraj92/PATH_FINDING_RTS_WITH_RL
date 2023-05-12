@@ -23,6 +23,9 @@ set(Torch_DIR "/Users/debrajray/MyComputer/libtorch-latest-1.12/libtorch/share/c
 find_package(Torch REQUIRED)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 find_package(xsimd REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(BLAS REQUIRED)

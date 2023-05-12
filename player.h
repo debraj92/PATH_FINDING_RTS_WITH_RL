@@ -63,6 +63,8 @@ class player : public RLNN_Agent {
 
     bool infiniteLife = false;
 
+    bool hasTakenDamageInThisRound = false;
+
     void createEmptyGrid(vector<std::vector<int>> &grid);
 
     void runTrainingAsync();
@@ -129,6 +131,8 @@ public:
     void initialize(int src_x, int src_y, int dest_x, int dest_y);
 
     void takeDamage(int points);
+
+    void resetDamageInThisRound();
 
     void learnGame();
 
