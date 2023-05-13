@@ -164,11 +164,10 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
 
     if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(isPotentialFieldPlayerStuck) {
-            // Behave like baseline A* player if stuck
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                    logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
-                }
+            // Use A* to escape from local minima.
+            // Might cause oscillations.
+            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
             }
             ob.locateTrajectoryAndDirection(fp);
             ob.locateRelativeTrajectory();

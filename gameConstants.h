@@ -15,7 +15,7 @@
 const int MAX_EPISODES = 300000;   /// Must be greater than 8
 
 const int GRID_SPAN = 512; /// >= 10 when running unit tests [7 for gameSimulation test]
-const int SESSION_TIMEOUT = GRID_SPAN * 3;
+const int SESSION_TIMEOUT = GRID_SPAN * 10;
 
 const int MIN_EXPLORATION_BEFORE_TRAINING = 4;
 
@@ -139,7 +139,7 @@ const int ABSTRACT_SECTOR_SIZE = 9; /// must be integer
 const int TILE_SCALE = 32;
 const int LENGTH_UI_FRAME = TILE_SCALE * GRID_SPAN;
 
-const int MAX_VISITED_FOR_STUCK = 3;//5;
+const int MAX_VISITED_FOR_STUCK = 3;
 const int MAX_VISITED_FOR_STUCK_FOR_PF = 7;
 /*
 /// Enable for UI simulation
@@ -151,8 +151,8 @@ const int MAX_POTENTIAL_TRAIL_SIZE = 5;
 
 /// Good for warcraft maps
 const double POTENTIAL_FIELD_ATTRACTION_C = 5 * GRID_SPAN;
-const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 700;
-const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 10;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 600;
+const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 50;
 const int MAX_POTENTIAL_TRAIL_SIZE = 10;
 
 const int ABSTRACT_SECTOR_PRA_STAR = 16;
