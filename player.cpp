@@ -166,17 +166,15 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
         if(isPotentialFieldPlayerStuck) {
             // Use A* to escape from local minima.
             // Might cause oscillations.
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                if (not findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
-                    logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
-                }
+            // Blocking dynamic enemies in path finding may cause oscillations in potential field
+            if (findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
+                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
             }
             ob.locateTrajectoryAndDirection(fp);
             ob.locateRelativeTrajectory();
         } else {
             pfUtil.evaluateSurroundingPotentialField(current_x, current_y, hashMapEnemies, grid);
         }
-
     }
 
     ob.findDestination(isTrainingMode and not stopLearning);

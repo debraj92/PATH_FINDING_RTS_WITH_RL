@@ -116,11 +116,11 @@ public:
 
     bool UIEnabled = false;
 
-    player(bool isTrainingMode) : cnnController(grid) {
+    player(bool isTrainingMode, bool loadNeuralNet = true) : cnnController(grid) {
         createEmptyGrid(grid);
         createEmptyGrid(visited);
         RLNN_Agent::setTrainingMode(isTrainingMode);
-        if(not isTrainingMode) {
+        if(not isTrainingMode and loadNeuralNet) {
             RLNN_Agent::loadModel(DQN_MODEL_PATH);
         }
         logger = std::make_unique<Logger>(LogLevel);
