@@ -83,7 +83,7 @@ Logger *Logger::endLineInfo() {
     return logInfo("\n");
 }
 
-void Logger::printBoard_(std::vector<std::vector<int>> &grid) {
+void Logger::printBoard_(const std::vector<std::vector<int>> &grid) {
     cout<<"print board"<<endl;
     for (int row=0; row<GRID_SPAN; row++) {
         for (int col=0; col<GRID_SPAN; col++) {
@@ -119,7 +119,7 @@ Logger *Logger::printBoardDebug(vector<std::vector<int>> &grid) {
     }
 }
 
-Logger *Logger::printBoardInfo(vector<std::vector<int>> &grid) {
+Logger *Logger::printBoardInfo(const vector<std::vector<int>> &grid) {
     switch (GLOBAL_LOG_LEVEL) {
         case DEBUG:
             if (level != OFF) {

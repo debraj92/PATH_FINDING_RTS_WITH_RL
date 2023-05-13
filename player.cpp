@@ -113,7 +113,7 @@ void player::learnGame() {
 
 }
 
-void player::playGame(vector<std::vector<int>> &gridSource, vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result) {
+void player::playGame(const vector<std::vector<int>> &gridSource, vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result) {
     copyGrid(gridSource);
     clearVisited();
     prepareEnemiesHashMap(enemies, dest_x, dest_y);
@@ -366,7 +366,7 @@ void player::loadExistingModel() {
     RLNN_Agent::loadModel(DQN_MODEL_PATH);
 }
 
-void player::copyGrid(std::vector<std::vector<int>> &gridSource) {
+void player::copyGrid(const std::vector<std::vector<int>> &gridSource) {
     for (int i=0; i<GRID_SPAN; i++) {
         for (int j=0; j<GRID_SPAN; j++) {
             grid[i][j] = gridSource[i][j];

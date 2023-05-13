@@ -26,7 +26,7 @@ class Logger {
     const string LOG_FILE_ENEMIES = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/log/log_enemies.txt";
     const string LOG_FILE_PATH = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/log/log_path.txt";
 
-    void printBoard_(std::vector<std::vector<int>> &grid);
+    void printBoard_(const std::vector<std::vector<int>> &grid);
 
 public:
 
@@ -64,7 +64,7 @@ public:
 
     Logger* printBoardDebug(std::vector<std::vector<int>> &grid);
 
-    Logger* printBoardInfo(std::vector<std::vector<int>> &grid);
+    Logger* printBoardInfo(const std::vector<std::vector<int>> &grid);
 
     void logObstaclesToFile(float (&fov)[FOV_WIDTH][FOV_WIDTH]);
 

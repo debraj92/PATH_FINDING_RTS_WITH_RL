@@ -136,7 +136,7 @@ public:
 
     void learnGame();
 
-    void playGame(std::vector<std::vector<int>> &gridSource, std::vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result);
+    void playGame(const std::vector<std::vector<int>> &gridSource, std::vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result);
 
     void observe(observation &ob, std::vector<std::vector<int>> &grid, int lastAction, int actionError, bool wasPreviousStateHotPursuit, int previousStateDirection);
 
@@ -156,7 +156,7 @@ public:
 
     bool isResuming();
 
-    void copyGrid(std::vector<std::vector<int>> &gridSource);
+    void copyGrid(const std::vector<std::vector<int>> &gridSource);
 
     void enableBaseLinePlayer();
 

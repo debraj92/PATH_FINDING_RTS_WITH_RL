@@ -319,7 +319,7 @@ vector<int> GameMaps::split(string s) {
 
 GameMaps::src_dst_data GameMaps::generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection) {
     int pointer = srcDst_iterator;
-    srcDst_iterator = (srcDst_iterator + 1) % srcDstCollection.size();
+    ++srcDst_iterator;
     return srcDstCollection[pointer];
 }
 
