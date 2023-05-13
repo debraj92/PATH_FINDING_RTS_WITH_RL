@@ -35,8 +35,10 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
     double cumulativeExecutionTime = 0;
     bool firstMove = true;
     vector<enemyUIData> enemiesInThisRound;
-    populateEnemiesForUI(enemiesInThisRound);
-    player1->publishOnUI(enemiesInThisRound);
+    if (player1->UIEnabled) {
+        populateEnemiesForUI(enemiesInThisRound);
+        player1->publishOnUI(enemiesInThisRound);
+    }
     while((not isEpisodeComplete()) && player1->timeStep <= SESSION_TIMEOUT) {
         auto t1 = high_resolution_clock::now();
         logger->logDebug("Time ")->logDebug(player1->timeStep)->endLineDebug();
@@ -80,17 +82,24 @@ void gameSimulation::play(vector<std::vector<int>> &grid) {
 
         previousAction = action;
         previousActionError = actionError;
-
-        fight(grid);
-        markDeadEnemies(enemiesInThisRound);
+        unordered_set<int> enemysInFov;
+        captureEnemiesInFov(grid, enemysInFov);
+        fight(grid, enemysInFov);
+        if (player1->UIEnabled) {
+            markDeadEnemies(enemiesInThisRound);
+        }
 
         // Enemy operations
         if (player1->life_left > 0 and not isDestinationReached()) {
             moveEnemies(grid, currentObservation, player1->timeStep);
-            enemiesInThisRound.clear();
-            populateEnemiesForUI(enemiesInThisRound);
-            fight(grid);
-            markDeadEnemies(enemiesInThisRound);
+            if (player1->UIEnabled) {
+                enemiesInThisRound.clear();
+                populateEnemiesForUI(enemiesInThisRound);
+            }
+            fight(grid, enemysInFov);
+            if (player1->UIEnabled) {
+                markDeadEnemies(enemiesInThisRound);
+            }
         }
 
         logger->printBoardDebug(grid);
@@ -186,10 +195,12 @@ void gameSimulation::learnToPlay(std::vector<std::vector<int>> &grid) {
         int actionError = 0;
         // Next Action
         int action = movePlayer(grid, currentObservation, &actionError);
-        fight(grid);
+        unordered_set<int> enemysInFov;
+        captureEnemiesInFov(grid, enemysInFov);
+        fight(grid, enemysInFov);
         if (player1->life_left > 0 and not isDestinationReached()) {
             moveEnemies(grid, currentObservation, player1->timeStep);
-            fight(grid);
+            fight(grid, enemysInFov);
         }
         logger->printBoardDebug(grid);
         ++player1->timeStep;
@@ -292,7 +303,8 @@ void gameSimulation::moveEnemies(vector<std::vector<int>> &grid, observation &ob
     }
 
     for (auto& enemyId : enemiesToMoveId) {
-        if(player1->hashMapEnemies.find(enemyId)->second.doNextMove(time, grid, {ob.playerX, ob.playerY, 0})) {
+        auto &enemy = player1->hashMapEnemies.at(enemyId);
+        if(enemy.doNextMove(time, grid, {ob.playerX, ob.playerY, 0})) {
             if(not player1->isTrainingMode) enemiesAwayFromBase.insert(enemyId);
         }
     }
@@ -315,11 +327,11 @@ void gameSimulation::moveEnemies(vector<std::vector<int>> &grid, observation &ob
     }
 }
 
-void gameSimulation::fight(vector<std::vector<int>> &grid) {
+void gameSimulation::fight(vector<std::vector<int>> &grid, unordered_set<int> &enemysInFov) {
     std::unordered_map<node_, int, node_::node_Hash> enemyLocations;
     // damage player
-    for (auto& enemyIterator : player1->hashMapEnemies) {
-        enemy& e = enemyIterator.second;
+    for (auto eid : enemysInFov) {
+        enemy& e = player1->hashMapEnemies.find(eid)->second;
         // ignore dead enemies
         if (e.getLifeLeft() > 0) {
             if (e.current_x == player1->current_x && e.current_y == player1->current_y) {
@@ -330,34 +342,30 @@ void gameSimulation::fight(vector<std::vector<int>> &grid) {
                 // enemy is also killed
                 e.takeDamage(e.getAttackPoints());
             }
-            auto enemyLocation = enemyLocations.find(node_(e.current_x, e.current_y));
-            if (enemyLocation != enemyLocations.end()) {
-                enemyLocation->second++;
+            if (enemyLocations.find(node_(e.current_x, e.current_y)) != enemyLocations.end()) {
+                enemyLocations.at(node_(e.current_x, e.current_y))++;
             } else {
                 enemyLocations.insert(make_pair(node_(e.current_x, e.current_y), 1));
             }
         }
     }
 
-    // damage enemies
-    for(auto enemy_iterator = player1->hashMapEnemies.begin(); enemy_iterator != player1->hashMapEnemies.end();) {
-        if (enemy_iterator->second.getLifeLeft() > 0) {
-            if (enemyLocations.find(node_(enemy_iterator->second.current_x, enemy_iterator->second.current_y))->second >= 2) {
-                logger->logDebug("Enemy killed, id: ")->logDebug(enemy_iterator->second.id)->endLineDebug();
-                enemy_iterator->second.takeDamage(enemy_iterator->second.getAttackPoints());
-                grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;
+    for(auto eid : enemysInFov) {
+        auto &enemy = player1->hashMapEnemies.at(eid);
+        if (enemy.getLifeLeft() > 0) {
+            if (enemyLocations.find(node_(enemy.current_x, enemy.current_y))->second >= 2) {
+                logger->logDebug("Enemy killed, id: ")->logDebug(enemy.id)->endLineDebug();
+                enemy.takeDamage(enemy.getAttackPoints());
+                grid[enemy.current_x][enemy.current_y] = 0;
             }
         }
-        if (enemy_iterator->second.getLifeLeft() <= 0 or enemy_iterator->second.max_moves <= 0) {
+        if (enemy.getLifeLeft() <= 0 or enemy.max_moves <= 0) {
             // clean up dead enemies
-            grid[enemy_iterator->second.current_x][enemy_iterator->second.current_y] = 0;
-            int enemyIdDelete = enemy_iterator->first;
-            enemy_iterator++;
-            player1->hashMapEnemies.erase(enemyIdDelete);
-        } else {
-            ++enemy_iterator;
+            grid[enemy.current_x][enemy.current_y] = 0;
+            player1->hashMapEnemies.erase(eid);
         }
     }
+
     if(player1->isInfiniteLife()) {
         grid[player1->current_x][player1->current_y] = 9;
     }
@@ -491,4 +499,16 @@ bool gameSimulation::isStuckAtBorder() {
     or player1->current_x == GRID_SPAN - 1
     or player1->current_y == GRID_SPAN - 1;
 
+}
+
+void gameSimulation::captureEnemiesInFov(std::vector<std::vector<int>> &grid, unordered_set<int> &enemysInFov) {
+    for (int i = player1->current_x - VISION_RADIUS * 2; i <= player1->current_x + VISION_RADIUS * 2; ++i) {
+        if (i < 0 or i >= GRID_SPAN) continue;
+        for (int j = player1->current_y - VISION_RADIUS * 2; j <= player1->current_y + VISION_RADIUS * 2; ++j) {
+            if (j < 0 or j >= GRID_SPAN) continue;
+            if (grid[i][j] > 0 and grid[i][j] != PLAYER_ID) {
+                enemysInFov.insert(grid[i][j]);
+            }
+        }
+    }
 }

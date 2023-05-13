@@ -59,8 +59,6 @@ class player : public RLNN_Agent {
 
     SimpleUIView* uiView;
 
-    bool UIEnabled = false;
-
     bool infiniteLife = false;
 
     bool hasTakenDamageInThisRound = false;
@@ -115,6 +113,8 @@ public:
     int damage = 0;
 
     unordered_map<int, enemy> hashMapEnemies;
+
+    bool UIEnabled = false;
 
     player(bool isTrainingMode) : cnnController(grid) {
         createEmptyGrid(grid);

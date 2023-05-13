@@ -27,9 +27,11 @@ class gameSimulation : public coordinatesUtil {
 
     int movePlayer(vector<vector<int>> &grid, const observation &currentObservation, int* error);
     void moveEnemies(vector<std::vector<int>> &grid, observation &ob, int time);
-    void fight(vector<std::vector<int>> &grid);
+    void fight(vector<std::vector<int>> &grid, unordered_set<int> &enemysInFov);
     float calculateReward(const observation &nextObservation, int action, int action_error);
     void populateEnemies(std::vector<std::vector<int>> &grid, bool isTrainingMode);
+
+    void captureEnemiesInFov(std::vector<std::vector<int>> &grid, unordered_set<int> &enemysInFov);
 
     bool isEpisodeComplete();
 
