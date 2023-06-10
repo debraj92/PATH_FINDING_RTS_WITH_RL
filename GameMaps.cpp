@@ -198,9 +198,6 @@ void GameMaps::dfsToFindDestination(vector<vector<int>> &grid, const AbstractNod
     if (dfsToFindFreeRealCoordinateInAbstractRegion(&destX, &destY, x, y, color, rw, createRank(x, y), visitedForRwDfs)) {
         auto shortestLen = computeEuclideanDistance(startX, startY, destX, destY);
         if (shortestLen >= MIN_LENGTH_PATH_IN_DATA && bins[(int)floor(shortestLen / MIN_LENGTH_PATH_IN_DATA) - 1] < MAX_BIN_SIZE) {
-            if(destX == 21 && destY == 25) {
-                logger->printBoardInfo(grid)->endLineInfo();
-            }
             assert(grid[destX][destY] == 0);
             fp.changeSourceAndDestination(startX, startY, destX, destY);
             fp.findPathToDestination();
