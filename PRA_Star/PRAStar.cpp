@@ -492,6 +492,9 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop, bool useConstrainedA
         abstractParentNodeColors->insert(currentColor);
         auto abNode = abstractGraph->createNode(currentColor);
         currentColor = abstractChildParent->find(abNode)->second.x;
+        if (!useConstrainedAStar) {
+            addConnectedNodesToAbstractPath(abstractGraph->unrank(currentColor));
+        }
         ++i;
         if(earlyStop && i>4) {
             break;
@@ -501,13 +504,16 @@ bool PRAStar::findPathToDestinationDeferred(bool earlyStop, bool useConstrainedA
         abstractParentNodeColors->insert(goalColor);
         intermediateParentGoal = -1;
     }
-    if (!useConstrainedAStar) {
-        abstractParentNodeColors->clear();
-    }
     if (!searchPathInRealWorldWithAstar(intermediateParentGoal)) {
         return false;
     }
     return true;
+}
+
+void PRAStar::addConnectedNodesToAbstractPath(AbstractNode &abNode) {
+    for(int childNodeColor : abNode.reachableNodes) {
+        abstractParentNodeColors->insert(childNodeColor);
+    }
 }
 
 

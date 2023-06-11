@@ -56,6 +56,8 @@ class PRAStar {
      */
     bool searchPathInAbstractGraphWithAstar(unique_ptr<unordered_map<node_, node_, node_::node_Hash>> &childParent);
 
+    void addConnectedNodesToAbstractPath(AbstractNode &abNode);
+
 public:
 
     PRAStar(vector<vector<int>> &grid, int startX, int startY, int endX, int endY) {
