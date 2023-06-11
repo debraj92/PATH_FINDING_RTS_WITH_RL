@@ -177,6 +177,8 @@ void GameMaps::serializeStartAndEndPoints() {
     ofstream fileSrcDst;
     fileSrcDst.open(SRC_DST_FILE);
     for(auto &data: collection) {
+        assert(grid[data.startX][data.startY] == 0);
+        assert(grid[data.endX][data.endY] == 0);
         fileSrcDst << data.startX << "," << data.startY << "," << data.endX << "," << data.endY << "," << data.pathLength << endl;
     }
     fileSrcDst.close();
@@ -199,6 +201,7 @@ void GameMaps::dfsToFindDestination(vector<vector<int>> &grid, const AbstractNod
         auto shortestLen = computeEuclideanDistance(startX, startY, destX, destY);
         if (shortestLen >= MIN_LENGTH_PATH_IN_DATA && bins[(int)floor(shortestLen / MIN_LENGTH_PATH_IN_DATA) - 1] < MAX_BIN_SIZE) {
             assert(grid[destX][destY] == 0);
+            assert(destX < GRID_SPAN && destY < GRID_SPAN);
             fp.changeSourceAndDestination(startX, startY, destX, destY);
             fp.findPathToDestination();
             src_dst_data data(startX, startY, destX, destY, fp.getCountOfNodesToDestination());
@@ -316,7 +319,10 @@ vector<int> GameMaps::split(string s) {
 
 GameMaps::src_dst_data GameMaps::generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection) {
     int pointer = srcDst_iterator;
-    ++srcDst_iterator;
+    srcDst_iterator = (srcDst_iterator + 1) % len_srcDst;
+    if (srcDstCollection.empty()) {
+        logger->logInfo("No src dest found in file")->endLineInfo();
+    }
     return srcDstCollection[pointer];
 }
 

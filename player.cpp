@@ -217,7 +217,7 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
     populateEnemyObstacles(gridTemporary, dontGoCloseToEnemies);
     fp->changeMap(gridTemporary);
     fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer and !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -227,7 +227,7 @@ bool player::findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x,
     logger->logDebug("findPathToDestination")->endLineDebug();
     fp->changeMap(grid);
     fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer and !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
