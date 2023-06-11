@@ -319,7 +319,7 @@ vector<int> GameMaps::split(string s) {
 
 GameMaps::src_dst_data GameMaps::generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection) {
     int pointer = srcDst_iterator;
-    srcDst_iterator = (srcDst_iterator + 1) % len_srcDst;
+    ++srcDst_iterator;
     if (srcDstCollection.empty()) {
         logger->logInfo("No src dest found in file")->endLineInfo();
     }
@@ -343,4 +343,8 @@ bool GameMaps::areEnemiesNearby(RealWorld &rw, int x, int y) {
 
 bool GameMaps::isEndOfSrcDst() {
     return srcDst_iterator >= len_srcDst;
+}
+
+void GameMaps::resetSourceDestinationPointer() {
+    srcDst_iterator = 0;
 }

@@ -34,6 +34,10 @@ void GameController::startGame(bool useDefaultMap) {
             if (useDefaultMap) {
                 playGameAsynchronous(player1);
             } else {
+                // Game will run infinitely. Or else set isGameStopped=true
+                if (gm.isEndOfSrcDst()) {
+                    gm.resetSourceDestinationPointer();
+                }
                 auto dataSrcDst = gm.generateNextSourceAndDestination(startEnds);
                 enemies.clear();
                 std::copy(enemiesOriginal.begin(), enemiesOriginal.end(), back_inserter(enemies));

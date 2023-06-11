@@ -5,8 +5,8 @@
 #include "player.h"
 #include "trainingMaps.h"
 #include <sys/resource.h>
-#include "GameController.h"
 #include "GameMaps.h"
+#include "GameController.h"
 
 #include <chrono>
 
@@ -185,9 +185,9 @@ void runOnGameMaps() {
     }
 
     ofstream file;
-    //string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results/thecrucible_rl.csv";
-    string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results/thecrucible_pra*.csv";
-    //string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results/thecrucible_pf.csv";
+    //string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results2/thecrucible_rl.csv";
+    string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results2/blastedlands_pra*.csv";
+    //string output = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/results2/blastedlands_pf.csv";
     file.open(output);
     for(auto &t: results) {
         file << t.damage << "," << t.pathRatio << "," << t.maxMemoryUsed << "," << t.executionTime << "," << t.reached << "," << t.pathLength << endl;
@@ -226,15 +226,18 @@ int main() {
     player player1(false);
     /// Enable baseline for comparison
     //player1.enableBaseLinePlayer();
-    player1.enablePotentialFieldPlayer();
+    //player1.enablePotentialFieldPlayer();
     //runTesting(player1);
-     */
+    */
+
+    // Player is initialized internally
     //runOnGameMaps();
 
     //generateMaps();
 
     /// Enable to generate enemies for warcraft maps
-    generateEnemiesForWarcraftMap();
+    //generateEnemiesForWarcraftMap();
+    // Set gameMaps.MIN_LENGTH_PATH_IN_DATA = 5 if generating for UI maps
     //generateStartAndEndCoordinatesWM();
 
 

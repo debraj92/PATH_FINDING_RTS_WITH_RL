@@ -33,21 +33,21 @@ class GameMaps {
     const string SRC_DST_FILE = "/Users/debrajray/MyComputer/RL-A-STAR-THESIS/benchmark-maps/wc3maps512-src_dst/blastedlands.csv";
     */
     /// Enables when running on UI
+    /*
     const string MAP_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_game.map";
     const string ENEMY_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_enemy.json";
     const string SRC_DST_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_src_dst.json";
+    */
 
-    /*
     const string MAP_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_game_2.map";
     const string ENEMY_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_enemy_2.json";
     const string SRC_DST_FILE = "/Users/debrajray/MyComputer/AIIDE_23/wc2_src_dst_2.json";
-    */
 
 
     const int MAX_VISIT_FOR_ABSTRACT_DFS_DATA_COLLECTION = 400;
     const int MAX_BIN_SIZE = 200;
     const int MAX_DATA = 2000;
-    const int MIN_LENGTH_PATH_IN_DATA = 50; // (set to 3 if collecting stats on smaller map)
+    const int MIN_LENGTH_PATH_IN_DATA = 50;
 
     int srcDst_iterator = -1;
     int len_srcDst;
@@ -109,6 +109,8 @@ public:
     void generateNextMap(std::vector<std::vector<int>>& grid);
 
     src_dst_data generateNextSourceAndDestination(vector<GameMaps::src_dst_data>& srcDstCollection);
+
+    void resetSourceDestinationPointer();
 
     void serializeStartAndEndPoints();
 
