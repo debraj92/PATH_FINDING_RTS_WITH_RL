@@ -4,6 +4,7 @@
 #include "player.h"
 #include "trainingMaps.h"
 #include <sys/resource.h>
+#include "GameMaps.h"
 #include "GameController.h"
 
 #include <chrono>
@@ -139,6 +140,78 @@ void generateMaps() {
 }
 
 
+void runOnGameMaps() {
+
+    vector<vector<int>> grid;
+    for (int i=0; i<GRID_SPAN; i++) {
+        std::vector<int> row(GRID_SPAN, 0);
+        grid.push_back(row);
+    }
+    vector<GameMaps::src_dst_data> startEnds;
+    std::vector<enemy> enemiesOriginal;
+    std::vector<enemy> enemies;
+    GameMaps gm;
+    gm.generateNextMap(grid);
+    gm.populateSourceDestinations(startEnds);
+    gm.populateEnemies(grid, enemiesOriginal);
+    vector<TestResult> results;
+    while (!gm.isEndOfSrcDst()) {
+        /**
+         * Set Up New Player
+         * Enable Neural Net if RL is enabled
+         */
+        player pl(false, true);
+        //player pl(false, false);
+        pl.enableInfiniteLife();
+
+        //pl.enableBaseLinePlayer();
+        //pl.enablePotentialFieldPlayer();
+
+        /**
+         * Start New Episode
+         */
+        auto data = gm.generateNextSourceAndDestination(startEnds);
+        enemies.clear();
+        std::copy(enemiesOriginal.begin(), enemiesOriginal.end(), back_inserter(enemies));
+        TestResult t{};
+        auto t1 = high_resolution_clock::now();
+        pl.playGame(grid, enemies, data.startX, data.startY, data.endX, data.endY, t);
+        auto t2 = high_resolution_clock::now();
+        duration<double, std::milli> ms_double = t2 - t1;
+        t.executionTime = ms_double.count();
+        t.pathLength = data.pathLength;
+        results.push_back(t);
+        cout<<"D: "<<t.damage<<" PR: "<<t.pathRatio<<" M: "<<t.maxMemoryUsed<<" T: "<<t.executionTime<<" R: "<<t.reached<<" L "<< t.pathLength <<endl;
+    }
+
+    ofstream file;
+    string output = "/Users/debrajray/MyComputer/RTS_Design2/results_expt2/thecrucible_rl.csv";
+    //string output = "/Users/debrajray/MyComputer/RTS_Design2/results_expt2/thecrucible_pra*.csv";
+    //string output = "/Users/debrajray/MyComputer/RTS_Design2/results_expt2/thecrucible_pf.csv";
+    file.open(output);
+    for(auto &t: results) {
+        file << t.damage << "," << t.pathRatio << "," << t.maxMemoryUsed << "," << t.executionTime << "," << t.reached << "," << t.pathLength << endl;
+    }
+    file.close();
+}
+
+void generateEnemiesForWarcraftMap() {
+    vector<vector<int>> grid;
+    for (int i=0; i<GRID_SPAN; i++) {
+        std::vector<int> row(GRID_SPAN, 0);
+        grid.push_back(row);
+    }
+    std::vector<enemy> enemies;
+    GameMaps gm;
+    gm.generateNextMap(grid);
+    gm.serializeEnemies(grid, enemies);
+}
+
+void generateStartAndEndCoordinatesWM() {
+    GameMaps gm;
+    gm.serializeStartAndEndPoints();
+}
+
 int main() {
 
     increaseStackSize();
@@ -149,19 +222,44 @@ int main() {
     //player player1(true);
     //player1.learnGame();
 
-
+    /*
     player player1(false);
     /// Enable baseline for comparison
     //player1.enableBaseLinePlayer();
     //player1.enablePotentialFieldPlayer();
-    TestResult t{};
-    runTesting(player1);
+    //runTesting(player1);
+    */
+
+    // Player is initialized internally
+    //runOnGameMaps();
 
     //generateMaps();
 
+    /// Enable to generate enemies for warcraft maps
+    //generateEnemiesForWarcraftMap();
+    // Set gameMaps.MIN_LENGTH_PATH_IN_DATA = 5 if generating for UI maps
+    //generateStartAndEndCoordinatesWM();
+
+
     /// UI works only for training-maps1
-    //GameController control;
-    //control.startGame();
+
+    /**
+     * For Warcraft Maps,
+     * set GRID_SPAN = 28,
+     * set ABSTRACT_SECTOR_PRA_STAR = 7 or 4
+     * set useDefaultMap to false
+     * Update GameMaps to pick the correct maps
+     *
+     * For Default Maps,
+     * set GRID_SPAN = 27
+     * set ABSTRACT_SECTOR_PRA_STAR = 9 or 3
+     * set useDefaultMap to true
+     *
+     */
+
+    GameController control;
+    control.startGame(false);
+    //control.startGame(true);
 
     return 0;
 }

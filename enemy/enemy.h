@@ -31,6 +31,10 @@ public:
     int start_x;
     int start_y;
 
+    // by default enemy can move to agent destination
+    int agent_DestinationX = -1;
+    int agent_DestinationY = -1;
+
     bool isTrainingInProgress = false;
 
     int lastKnownPlayerX = -1;
@@ -79,6 +83,8 @@ public:
     void predictNextPlayerLocation(vector<std::vector<int>> &grid, playerInfo &pl_info);
     void unitTraining();
     void reborn();
+
+    void setAgentDestination(int x, int y);
 
 };
 

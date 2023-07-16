@@ -53,7 +53,7 @@ void DQNNet::saveModel(const string &file) {
 }
 
 void DQNNet::loadModel(const string &file) {
-    logger->logInfo("DQNNet::loadModel from file")->endLineInfo();
+    logger->logDebug("DQNNet::loadModel from file")->endLineDebug();
     torch::load(m_sequential, file + "/vanilla-DQN/model/m_sequential.pt");
     torch::load(m_conv1, file + "/vanilla-DQN/model/m_conv1.pt");
 }

@@ -14,8 +14,8 @@
  */
 const int MAX_EPISODES = 330000;   /// Must be greater than 8
 
-const int GRID_SPAN = 27; /// >= 10 when running unit tests [7 for gameSimulation test]
-const int SESSION_TIMEOUT = GRID_SPAN * 5;
+const int GRID_SPAN = 28; /// >= 10 when running unit tests [7 for gameSimulation test]
+const int SESSION_TIMEOUT = GRID_SPAN * 10;
 
 const int MIN_EXPLORATION_BEFORE_TRAINING = 4;
 
@@ -42,8 +42,8 @@ const int VISION_RADIUS = 4;
 const int FOV_WIDTH = 2 * VISION_RADIUS + 1;
 
 const int ENEMY_VISION_RADIUS = 3;
-const int ENEMY_MAX_MOVES = 8;
-const int MAX_ENEMY_DISTANCE_FOR_PURSUIT = 7;
+const int ENEMY_MAX_MOVES = 20;
+const int MAX_ENEMY_DISTANCE_FOR_PURSUIT = 6;
 
 const int GOAL_RADIUS = 1;
 
@@ -136,14 +136,27 @@ const int MAX_ENEMIES_TO_TRACK = 6; /// CHANGE WOULD REQUIRE ADDITIONAL CHANGES 
 
 const int ABSTRACT_SECTOR_SIZE = 9; /// must be integer
 
-const int LENGTH_UI_FRAME = 32 * GRID_SPAN;
+const int TILE_SCALE = 32;
+const int LENGTH_UI_FRAME = TILE_SCALE * GRID_SPAN;
 
-const int MAX_VISITED_FOR_STUCK = 5;
+const int MAX_VISITED_FOR_STUCK = 3;
+const int MAX_VISITED_FOR_STUCK_FOR_PF = 7;
 
-const double POTENTIAL_FIELD_ATTRACTION_C = 90;
-const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 140; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
-const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 5;
-const int MAX_POTENTIAL_TRAIL_SIZE = 4;
+/*
+/// Enable for UI simulation
+const double POTENTIAL_FIELD_ATTRACTION_C = 10 * GRID_SPAN;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 300; // 150 repels enemy more and hence better %reach. Advantage over A* baseline
+const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 20;
+const int MAX_POTENTIAL_TRAIL_SIZE = 5;
+*/
+
+/// Good for warcraft maps
+const double POTENTIAL_FIELD_ATTRACTION_C = 3.5 * GRID_SPAN;
+const double POTENTIAL_FIELD_REPULSION_ENEMY_N = 600;
+const double POTENTIAL_FIELD_REPULSION_TRAIL_N = 30;
+const int MAX_POTENTIAL_TRAIL_SIZE = 10;
+
+const int ABSTRACT_SECTOR_PRA_STAR = 7;
 
 namespace RTS {
     enum LOG_LEVEL {

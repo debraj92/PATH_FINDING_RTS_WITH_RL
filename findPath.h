@@ -1,16 +1,16 @@
 //
-// Created by Debraj Ray on 2021-12-30.
+// Created by Debraj Ray on 2023-04-19.
 //
 
-#ifndef EXAMPLE_FINDPATH_H
-#define EXAMPLE_FINDPATH_H
+#ifndef EXAMPLE_FINDPATHWITHPRASTAR_H
+#define EXAMPLE_FINDPATHWITHPRASTAR_H
 
 #include <iostream>
 #include "vector"
 #include <set>
 #include <map>
 #include "gameConstants.h"
-#include "AStar_.h"
+#include "PRA_Star/PRAStar.h"
 #include "gameConstants.h"
 #include "Logger.h"
 
@@ -26,33 +26,19 @@ class findPath {
     int next_x;
     int next_y;
 
-    /// Real World
-    AStar_ aStar;
-
-    /// Abstract World
-    std::unique_ptr<AStar_> aStarAbs;
-    vector<std::vector<int>> gridAbstract;
+    PRAStar aStar;
 
     int source_x;
     int source_y;
     int destination_x;
     int destination_y;
-    node_ destAbsCenter;
 
-    node_ nextAbstractCenterSaved;
     bool isAbstractSearchInUse = false;
 
     vector<std::pair<int, int>> path;
     std::unique_ptr<Logger> logger;
 
-    /**
-     * Compare two nodes in the A* path
-     * @return +1 if first > second, -1 is first < second, 0 otherwise
-     */
     int compareNodeOrders(int location1_x, int location1_y, int location2_x, int location2_y);
-
-    node_ getAbstractCenterOfCoordinate(int x, int y);
-    void replenishNodesFromRealWorldAStar(int x, int y);
 
 public:
 
@@ -69,18 +55,14 @@ public:
         source_y = src_y;
         destination_x = dest_x;
         destination_y = dest_y;
-        destAbsCenter = getAbstractCenterOfCoordinate(destination_x, destination_y);
-        createAbstractWorldGrid();
     }
 
     findPath(std::vector<std::vector<int>> &grid) : aStar(grid){
-        logger = std::make_unique<Logger>(LogLevel);
-        destAbsCenter = getAbstractCenterOfCoordinate(destination_x, destination_y);
-        createAbstractWorldGrid();
+            logger = std::make_unique<Logger>(LogLevel);
     }
 
     bool findPathToDestination();
-    bool findPathToDestinationDeferred();
+    bool findPathToDestinationDeferred(bool earlyStop, bool useConstrainedAStar);
     void calculateNextPosition();
     void getNextPositionAfterGivenLocation(int &given_x, int &given_y, int &next_x, int &next_y);
     int getNext_x();
@@ -89,28 +71,18 @@ public:
     bool isOnTrackNoMemorizing(int current_x, int current_y);
     int pathDirection(int current_x, int current_y);
     int inferDirection(int x, int y, int next_x, int next_y);
+
     void changeSourceAndDestination(int startX, int startY, int endX, int endY);
-    void changeMap(vector<vector<int>> &grid);
+    void changeMap(std::vector<std::vector<int>> &grid);
     int getCountOfNodesToDestination();
-
-    void stitchNewPathIntoExistingAtNode(findPath &fp_, int xOnTrack, int yOnTrack, int newSourceX, int newSourceY);
-
+    float findShortestDistance(pair<int, int> src, pair<int, int> dst);
     int getShortestDistance(int x1, int y1, int x2, int y2);
-
-    /**
-     * Abstract A*
-     */
-     void createAbstractWorldGrid();
-
+    void getCurrentStartOfPath(int &x, int &y);
     int getNodeOrder(int &x, int &y);
 
-    void printTrack(int startX, int startY);
-
-    void getCurrentStartOfPath(int &x, int &y);
-
     int getMaxMemoryUsed();
-
+    void createAbstractGraph();
 };
 
 
-#endif //EXAMPLE_FINDPATH_H
+#endif //EXAMPLE_FINDPATHWITHPRASTAR_H

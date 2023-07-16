@@ -23,6 +23,9 @@ set(Torch_DIR "/Users/debrajray/MyComputer/libtorch-latest-1.12/libtorch/share/c
 find_package(Torch REQUIRED)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
 
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 find_package(xsimd REQUIRED)
 find_package(OpenMP REQUIRED)
 find_package(BLAS REQUIRED)
@@ -45,7 +48,7 @@ add_executable(example example.cpp fixedobstacles.h fixedobstacles.cpp gameConst
         #DQN/dueling-DQN-bounded/DQNNet.cpp DQN/dueling-DQN-bounded/DQNNet.h DQN/dueling-DQN-bounded/RLNN_Agent.cpp DQN/dueling-DQN-bounded/RLNN_Agent.h
         Logger.cpp Logger.h trainingMaps.cpp trainingMaps.h testing.h FOV_CNN/CNN_controller.cpp FOV_CNN/CNN_controller.h FOV_CNN/FOV_Filters.cpp FOV_CNN/FOV_Filters.h dist/json/json.h dist/json/json-forwards.h dist/jsoncpp.cpp JsonParser.cpp JsonParser.h
         UI/SimpleUIView.cpp UI/SimpleUIView.h GameController.cpp GameController.h UI/TileMap.h enemy/enemyUIData.h
-        PotentialFieldPlayerUtil.cpp PotentialFieldPlayerUtil.h)
+        PotentialFieldPlayerUtil.cpp PotentialFieldPlayerUtil.h PRA_Star/PRAStar.cpp PRA_Star/PRAStar.h PRA_Star/RealWorld.cpp PRA_Star/RealWorld.h PRA_Star/AbstractGraph.cpp PRA_Star/AbstractGraph.h PRA_Star/AbstractNode.h PRA_Star/Abstraction.h GameMaps.cpp GameMaps.h)
 
 target_include_directories(example PUBLIC ${xtensor_INCLUDE_DIRS})
 target_link_libraries(example "${TORCH_LIBRARIES}" xtensor ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${OPENGL_LIBRARY} OpenMP::OpenMP_CXX sfml-graphics)

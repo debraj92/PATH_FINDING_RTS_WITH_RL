@@ -65,9 +65,9 @@ class player : public RLNN_Agent {
 
     SimpleUIView* uiView;
 
-    bool UIEnabled = false;
-
     bool infiniteLife = false;
+
+    bool hasTakenDamageInThisRound = false;
 
     void createEmptyGrid(vector<std::vector<int>> &grid);
 
@@ -118,13 +118,15 @@ public:
 
     int damage = 0;
 
+    bool UIEnabled = false;
+
     unordered_map<int, enemy> hashMapEnemies;
 
-    player(bool isTrainingMode) : cnnController(grid) {
+    player(bool isTrainingMode, bool loadNeuralNet = true) : cnnController(grid) {
         createEmptyGrid(grid);
         createEmptyGrid(visited);
         RLNN_Agent::setTrainingMode(isTrainingMode);
-        if(not isTrainingMode) {
+        if(not isTrainingMode and loadNeuralNet) {
             RLNN_Agent::loadModel(DQN_MODEL_PATH);
         }
         logger = std::make_unique<Logger>(LogLevel);
@@ -135,6 +137,8 @@ public:
     void initialize(int src_x, int src_y, int dest_x, int dest_y);
 
     void takeDamage(int points);
+
+    void resetDamageInThisRound();
 
     void learnGame();
 
@@ -147,8 +151,6 @@ public:
 
     // ONLY FOR STATS
     void countPathLengthToDestination(int src_x, int src_y, int dst_x, int dst_y);
-
-    bool findPathToKnownPointOnTrack(int src_x, int src_y);
 
     int selectAction(const observation& currentState);
 
@@ -174,7 +176,7 @@ public:
 
     void removeTemporaryObstacles();
 
-    void prepareEnemiesHashMap(std::vector<enemy>& enemies);
+    void prepareEnemiesHashMap(std::vector<enemy>& enemies, int agentDstX, int agentDstY);
 
     int markVisited();
 
@@ -189,6 +191,8 @@ public:
     void enableInfiniteLife();
 
     void moveWithPotentialField();
+
+    bool isInfiniteLife();
 
     void checkPointModel(int episode);
 

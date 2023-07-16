@@ -43,6 +43,7 @@ public:
 
     double calculatePotentialAtLocation(int player_x, int player_y, const unordered_map<int, enemy> &hashMapEnemies, const vector<std::vector<int>> &grid);
     void evaluateSurroundingPotentialField(int player_x, int player_y, const unordered_map<int, enemy> &hashMapEnemies, const vector<std::vector<int>> &grid);
+    void updateCoordinateUsingDirection(int &x, int &y, int direction);
     void moveToLowestPotentialCell(int &player_x, int &player_y);
 
 };

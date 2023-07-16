@@ -17,7 +17,10 @@ using namespace std;
 
 void player::takeDamage(int points) {
     if(infiniteLife) {
-        damage++;
+        if(not hasTakenDamageInThisRound) {
+            damage++;
+            hasTakenDamageInThisRound = true;
+        }
         return;
     }
     if (life_left > 0) life_left -= points;
@@ -52,7 +55,7 @@ void player::learnGame() {
 
             /// If resumed, then do not change enemy positions from last episode
             /// else reset enemy positions to start of game
-            prepareEnemiesHashMap(enemies);
+            prepareEnemiesHashMap(enemies, dest_x, dest_y);
         }
         game.player1->initialize(src_x, src_y, dest_x, dest_y);
 
@@ -111,7 +114,7 @@ void player::learnGame() {
 void player::playGame(vector<std::vector<int>> &gridSource, vector<enemy> &enemies, int src_x, int src_y, int dest_x, int dest_y, TestResult &result) {
     copyGrid(gridSource);
     clearVisited();
-    prepareEnemiesHashMap(enemies);
+    prepareEnemiesHashMap(enemies, dest_x, dest_y);
     gameSimulation game(grid);
     game.player1 = this;
     logger->logDebug("Source (" + to_string(src_x) +", " + to_string(src_y) + ") Destination (" + to_string(dest_x) +", " + to_string(dest_y) +")\n")
@@ -126,6 +129,7 @@ void player::playGame(vector<std::vector<int>> &gridSource, vector<enemy> &enemi
     result.damage = game.player1->damage;
     result.pathRatio = (double)game.player1->distanceTravelled / (double)game.player1->pathLength;
     result.maxMemoryUsed = game.player1->maxMemoryUsed;
+    result.reached = (result.final_x == game.player1->destination_x) and (result.final_y == game.player1->destination_y);
     game.removeCharacters(grid);
     logger->logDebug("Total rewards collected ")->logDebug(game.getTotalRewardsCollected())->endLineDebug();
 }
@@ -143,11 +147,11 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isSimpleAstarPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(not isSimplePlayerStuckDontReroute) {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
+                //logger->logInfo("Player could not find path to destination, will wait")->endLineInfo();
             }
         } else {
             if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                logger->logInfo("Player will use no enemies path")->endLineInfo();
+                //logger->logInfo("Player will use no enemies path")->endLineInfo();
                 findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y);
             }
         }
@@ -158,10 +162,8 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (isPotentialFieldPlayer and (current_x != destination_x or current_y != destination_y)) {
         if(isPotentialFieldPlayerStuck) {
             // Behave like baseline A* player if stuck
-            if (not findPathToDestination(current_x, current_y, destination_x, destination_y, true)) {
-                if (not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
-                    logger->logInfo("ERROR: Player could not find path to destination")->endLineInfo();
-                }
+            if (findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
+                //logger->logDebug("Player could not find path to destination, will wait")->endLineDebug();
             }
             ob.locateTrajectoryAndDirection(fp);
             ob.locateRelativeTrajectory();
@@ -175,7 +177,7 @@ void player::observe(observation &ob, std::vector<std::vector<int>> &grid, const
     if (not isSimpleAstarPlayer and not isPotentialFieldPlayer) {
 
         // Is stuck, re-route. If stuck for long (RLPlayerStuckTimer), behave like baseline A*
-        if (isRLPlayerStuck and not findPathToDestination(current_x, current_y, destination_x, destination_y, false)) {
+        if (isRLPlayerStuck and not findPathToDestinationWithNoEnemies(current_x, current_y, destination_x, destination_y)) {
         }
 
         ob.locateTrajectoryAndDirection(fp);
@@ -208,8 +210,9 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
     std::vector<std::vector<int>> gridTemporary;
     std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
     populateEnemyObstacles(gridTemporary, dontGoCloseToEnemies);
-    fp = std::make_shared<findPath>(gridTemporary, src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred();
+    fp->changeMap(gridTemporary);
+    fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -217,8 +220,9 @@ bool player::findPathToDestination(int src_x, int src_y, int dst_x, int dst_y, b
 
 bool player::findPathToDestinationWithNoEnemies(int src_x, int src_y, int dst_x, int dst_y) {
     logger->logDebug("findPathToDestination")->endLineDebug();
-    fp = std::make_shared<findPath>(grid, src_x, src_y, dst_x, dst_y);
-    bool isPathFound = fp->findPathToDestinationDeferred();
+    fp->changeMap(grid);
+    fp->changeSourceAndDestination(src_x, src_y, dst_x, dst_y);
+    bool isPathFound = fp->findPathToDestinationDeferred(true, (!isSimpleAstarPlayer or !isPotentialFieldPlayer));
     int memoryUsed = fp->getMaxMemoryUsed();
     maxMemoryUsed = memoryUsed > maxMemoryUsed ? memoryUsed : maxMemoryUsed;
     return isPathFound;
@@ -230,39 +234,6 @@ void player::countPathLengthToDestination(int src_x, int src_y, int dst_x, int d
     findPath fp_(gridTemporary, src_x, src_y, dst_x, dst_y);
     fp_.findPathToDestination();
     pathLength = fp_.getCountOfNodesToDestination();
-}
-
-bool player::findPathToKnownPointOnTrack(int src_x, int src_y) {
-    logger->logDebug("findPathToKnownPointOnTrack")->endLineDebug();
-
-    std::vector<std::vector<int>> gridTemporary;
-    std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
-    populateEnemyObstacles(gridTemporary, false);
-
-    //find next free location in the existing path
-    int x = fp->knownOnTrackX;
-    int y = fp->knownOnTrackY;
-    if(x != destination_x or y != destination_y) {
-        fp->getNextPositionAfterGivenLocation(x, y, x, y);
-        while(grid[x][y] != 0) {
-            fp->getNextPositionAfterGivenLocation(x, y, x, y);
-        }
-    }
-    findPath fpTemp(gridTemporary, src_x, src_y, x, y);
-    if (not fpTemp.findPathToDestination()) {
-        gridTemporary.clear();
-        std::copy(grid.begin(), grid.end(), back_inserter(gridTemporary));
-        findPath fpTemp2(gridTemporary, src_x, src_y, x, y);
-        if (not fpTemp2.findPathToDestination()) {
-            logger->logInfo("ERROR: Path to point on track not found")->endLineInfo();
-            return false;
-        }
-        fp->stitchNewPathIntoExistingAtNode(fpTemp2, x, y, src_x, src_y);
-        return true;
-    }
-    fp->stitchNewPathIntoExistingAtNode(fpTemp, x, y, src_x, src_y);
-
-    return true;
 }
 
 void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
@@ -289,11 +260,12 @@ void player::initialize(int src_x, int src_y, int dest_x, int dest_y) {
     distanceTravelled = 0;
     damage = 0;
     maxMemoryUsed = 0;
-
+    /// Create abstractions
+    fp = std::make_shared<findPath>(grid);
+    fp->createAbstractGraph();
     if(isPotentialFieldPlayer) {
         pfUtil.setDestination(dest_x, dest_y);
     }
-
 }
 
 int player::selectAction(const observation& currentState) {
@@ -438,8 +410,8 @@ void player::populateEnemyObstacles(vector<std::vector<int>> &gridTemp, bool don
 
     for(int i = current_x - ENEMY_VISION_RADIUS; i <= current_x + ENEMY_VISION_RADIUS; i++) {
         for(int j = current_y - ENEMY_VISION_RADIUS; j <= current_y + ENEMY_VISION_RADIUS; j++) {
-            if(i >= 0 and i < GRID_SPAN and j >= 0 and j < GRID_SPAN and grid[i][j] != PLAYER_ID and grid[i][j] > 0) {
-                const auto &e = hashMapEnemies.find(grid[i][j])->second;
+            if(i >= 0 and i < GRID_SPAN and j >= 0 and j < GRID_SPAN and gridTemp[i][j] != PLAYER_ID and gridTemp[i][j] > 0) {
+                const auto &e = hashMapEnemies.find(gridTemp[i][j])->second;
                 if (dontGoClose) {
                     // surround enemy with obstacles
                     for(int x = e.current_x - 1; x <= e.current_x + 1; x++) {
@@ -543,9 +515,10 @@ void player::removeTemporaryObstacles() {
     }
 }
 
-void player::prepareEnemiesHashMap(vector<enemy> &enemies) {
+void player::prepareEnemiesHashMap(vector<enemy> &enemies, int agentDstX, int agentDstY) {
     hashMapEnemies.clear();
-    for(const enemy e: enemies) {
+    for(enemy e: enemies) {
+        e.setAgentDestination(agentDstX, agentDstY);
         hashMapEnemies.insert(std::make_pair(e.id, e));
     }
 }
@@ -600,6 +573,14 @@ void player::moveWithPotentialField() {
     if (isPotentialFieldPlayer) {
         pfUtil.moveToLowestPotentialCell(current_x, current_y);
     }
+}
+
+bool player::isInfiniteLife() {
+    return infiniteLife;
+}
+
+void player::resetDamageInThisRound() {
+    hasTakenDamageInThisRound = false;
 }
 
 
