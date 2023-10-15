@@ -5,10 +5,12 @@
 ### If two enemies collide they destroy each other. If an enemy has chased the agent for a maximum duration without success, then the enemy is destroyed. These are enemy weaknesses that the agent is unaware of. However, the agent is expected to discover these weaknesses and learn to exploit them through reinforcement learning.
 ### The agent cannot damage the enemies.
 ### The agent learns strategies which helps it to succeed - for example - the agent can trick the enemies into colliding with each other.
-### The overall objective for the agent is to move in a way that keeps deceiving the enemies and thereby avoiding collision. Furthermore, the agent must learn to avoid encirclement by the multiple enemies which is a guaranteed death for the agent if it occurs.
-### We have shown in our research that this idea is generalizable. That is, given a different game with varying rules, the agent can autonomously learn strategies specific to that game which enables it to perform adversarial navigation.
-### We have also shown that our idea is scalable. That is, the agent can navigate maps of large sizes even though they are trained on small maps.
-### Furthermore, the agent can navigate game maps that are significantly different from the training maps because of abstractions that we introduced in our research
+### The overall objective for the agent is to move in a way that keeps deceiving the enemies and thereby avoiding collision. Furthermore, the agent should learn to avoid encirclement by the enemies which when occurs leaves no escape route for the agent.
+
+### We have shown in this research that our idea is generalizable. That is, given different game with varying rules, the agent can autonomously learn other strategies specific to that game which enables it to perform adversarial navigation.
+### We have also shown that our idea is scalable. The agent can navigate maps of large sizes even though they are trained on small maps.
+### Furthermore, the agent can navigate game maps that are significantly different from the training maps. An idea called environmental abstractions that we introduced in our research was crucial for this generalization.
+### We trained the agent on small custom maps, but evaluated the agent's performance on standard game maps from Warcraft III. The agent outperformed current state-of-the-art approaches for adversarial navigation.
 
 Here are two short demoes of the agent navigating in adversarial environments. The starting location is indicated by a ring and the destination is marked by a flag.
 
