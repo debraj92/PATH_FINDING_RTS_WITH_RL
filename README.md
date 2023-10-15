@@ -2,8 +2,8 @@
 
 ### The agent's objective is to travel from a starting location to a destination through a map populated with enemies - the fire monsters.
 ### The enemies chase the agent and attempt to damage it.
-### If two enemies collide they destroy each other. If an enemy has chased the agent for a maximum duration without success, then the enemy is destroyed (another enemy weakness).
-### The agent cannot damage the enemies, nor is it aware of the enemy weaknesses. The agent is expected to learn about the weaknesses and know how to exploit them through reinforcement learning.
+### If two enemies collide they destroy each other. If an enemy has chased the agent for a maximum duration without success, then the enemy is destroyed. These are enemy weaknesses that the agent is unaware of. However, the agent is expected to discover these weaknesses and learn to exploit them through reinforcement learning.
+### The agent cannot damage the enemies.
 ### The agent learns strategies which helps it to succeed - for example - the agent can trick the enemies into colliding with each other.
 ### The overall objective for the agent is to move in a way that keeps deceiving the enemies and thereby avoiding collision. Furthermore, the agent must learn to avoid encirclement by the multiple enemies which is a guaranteed death for the agent if it occurs.
 ### We have shown in our research that this idea is generalizable. That is, given a different game with varying rules, the agent can autonomously learn strategies specific to that game which enables it to perform adversarial navigation.
